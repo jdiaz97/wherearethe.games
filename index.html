@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Showcase</title>
+    <link href="main.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container" id="gameContainer"></div>
+
+    <script>
+        // Function to fetch and parse CSV data
+        async function fetchCSVData(url) {
+            try {
+                const response = await fetch(url);
+                const csvText = await response.text();
+                return parseCSV(csvText);
+            } catch (error) {
+                console.error('Error fetching CSV:', error);
+                return [];
+            }
+        }
+
+        // Function to parse CSV text into an array of objects
+        function parseCSV(csvText) {
+            const rows = csvText.split('\n');
+            const headers = rows[0].split(';;');
+            return rows.slice(1).map(row => {
+                const values = row.split(';;');
+                return headers.reduce((obj, header, index) => {
+                    obj[header.trim()] = values[index]?.trim() || '';
+                    return obj;
+                }, {});
+            });
+        }
+
+        // Function to create a game card HTML
+        function createGameCard(game) {
+            return `
+                <div class="game-card">
+                    <div class="game-header">${game.Name}</div>
+                    <img src="${game.Thumbnail}" alt="${game.Name} Thumbnail" class="game-thumbnail">
+                    <div class="game-info">
+                        <div class="info-item">
+                            <span class="info-label">Country</span>
+                            ${game.Country}
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Genre</span>
+                            <span class="genre">${game.Genre}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Description</span>
+                            <div class="description">
+                                ${game.Description}
+                                <span class="read-more">Read More</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Publisher</span>
+                            ${game.Publisher_Names}
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Developer</span>
+                            ${game.Developer_Names}
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Platform</span>
+                            ${game.Platform}
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Release Date</span>
+                            ${game.Release_Date}
+                        </div>
+                        <a href="${game.Steam_Link}" class="steam-link" target="_blank">View on Steam</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to render games
+        function renderGames(gamesData) {
+            const container = document.getElementById('gameContainer');
+            container.innerHTML = ''; // Clear existing content
+            gamesData.forEach(game => {
+                container.innerHTML += createGameCard(game);
+            });
+
+            // Add event listeners for "Read More" buttons
+            document.querySelectorAll('.read-more').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('expanded');
+                    this.textContent = this.parentElement.classList.contains('expanded') ? 'Read Less' : 'Read More';
+                });
+            });
+        }
+
+        // Main function to fetch data and render games
+        async function main() {
+            // Replace 'YOUR_CSV_URL_HERE' with the actual URL of your CSV file
+            const csvUrl = 'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Chilefile.csv';
+            const gamesData = await fetchCSVData(csvUrl);
+            renderGames(gamesData);
+        }
+
+        // Call the main function when the page loads
+        window.onload = main;
+    </script>
+</body>
+</html>
