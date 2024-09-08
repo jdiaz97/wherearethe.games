@@ -1,0 +1,104 @@
+:root {
+    --primary-color: #ff69b4;
+    --secondary-color: #4a4a4a;
+    --background-color: #f0f0f0;
+    --card-background: white;
+    --text-color: #333;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+.game-card {
+    background-color: var(--card-background);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+.game-card:hover {
+    transform: translateY(-5px);
+}
+.game-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+.game-thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+.game-thumbnail:hover {
+    transform: scale(1.05);
+}
+.game-info {
+    padding: 20px;
+}
+.info-item {
+    margin-bottom: 10px;
+}
+.info-label {
+    font-weight: bold;
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: 2px;
+}
+.steam-link {
+    display: inline-block;
+    background-color: #171a21;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 25px;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+.steam-link:hover {
+    background-color: #66c0f4;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.description {
+    position: relative;
+    max-height: 100px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+.description.expanded {
+    max-height: 1000px;
+}
+.read-more {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--card-background);
+    padding: 5px 10px;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+.genre {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    display: inline-block;
+    margin-top: 10px;
+}
