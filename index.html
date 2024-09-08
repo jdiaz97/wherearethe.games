@@ -9,10 +9,18 @@
 </head>
 
 <body>
+    <div id="filterButtons"></div>
     <div class="container" id="gameContainer"></div>
 
     <script>
         // Function to fetch and parse CSV data
+        let allGames = [];  // Global variable to store all games
+
+        let uniqueCountries = new Set(); // This will store unique countries
+        // Add new countries to the set
+        uniqueCountries.add('Chile');
+        uniqueCountries.add('Denmark');
+
         async function fetchCSVData(url) {
             try {
                 const response = await fetch(url);
@@ -35,6 +43,27 @@
                     return obj;
                 }, {});
             });
+        }
+
+        // Function to create filter buttons
+        function createFilterButtons() {
+            const filterContainer = document.getElementById('filterButtons');
+            filterContainer.innerHTML = '<button onclick="filterGames(\'all\')">All Countries</button>';
+            uniqueCountries.forEach(country => {
+                filterContainer.innerHTML += `<button onclick="filterGames('${country}')">${country}</button>`;
+            });
+        }
+
+        createFilterButtons();
+
+        // Function to filter games
+        function filterGames(country) {
+            if (country === 'all') {
+                renderGames(allGames);
+            } else {
+                const filteredGames = allGames.filter(game => game.Country === country);
+                renderGames(filteredGames);
+            }
         }
 
         // Function to create a game card HTML
@@ -98,21 +127,34 @@
             });
         }
 
+        // Function to filter games based on selected country
+        function filterGames(country) {
+            if (country === 'all') {
+                renderGames(allGames);  // Show all games if "All Countries" is selected
+            } else {
+                const filteredGames = allGames.filter(game => game.Country === country);
+                renderGames(filteredGames);  // Show only filtered games
+            }
+        }
+
+
         // Main function to fetch data and render games
         async function main() {
-    const csvUrls = [
-        'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Chile.csv',
-        'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Denmark.csv',
-        // Add more URLs as needed
-    ];
+            const csvUrls = [
+                'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Chile.csv',
+                'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Denmark.csv',
+                // Add more URLs as needed
+            ];
 
-    try {
-        const gamesData = await fetchMultipleCSVData(csvUrls);
-        renderGames(gamesData);
-    } catch (error) {
-        console.error('Error fetching or processing data:', error);
-    }
-}
+            try {
+                const gamesData = await fetchMultipleCSVData(csvUrls);
+                allGames = gamesData;  // Store all fetched games in a global variable
+
+                renderGames(gamesData);
+            } catch (error) {
+                console.error('Error fetching or processing data:', error);
+            }
+        }
 
         async function fetchMultipleCSVData(urls) {
             const fetchPromises = urls.map(url => fetchCSVData(url));
