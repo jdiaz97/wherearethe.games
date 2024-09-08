@@ -186,8 +186,16 @@ function save_data(df::DataFrame,country::String)
     goods = df[.!bits,:]
 
     failed = select(failed, :Country, :Steam_Link)
+
+    country_path = "export/"*country*".csv"
+    if isfile(country_path)
+        currenty_goods = CSV.read(country_path, DataFrame; delim = ";;")
+        goods = vcat(currenty_goods,goods)
+        goods = unique(goods)
+    else 
+        CSV.write(country_path,goods, delim =";;")
+    end
     
-    CSV.write("export/"*country*"file.csv",goods, delim =";;")
 
     export_path = "export/failed.csv"
     if isfile(export_path)
@@ -195,7 +203,7 @@ function save_data(df::DataFrame,country::String)
         failed = vcat(currenty_failed,failed)
         failed = unique(failed)
     else
-    CSV.write(export_path,failed, delim =";;")
+        CSV.write(export_path,failed, delim =";;")
     end
     return nothing
 end

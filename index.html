@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Showcase</title>
     <link href="main.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container" id="gameContainer"></div>
 
@@ -89,7 +91,7 @@
 
             // Add event listeners for "Read More" buttons
             document.querySelectorAll('.read-more').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     this.parentElement.classList.toggle('expanded');
                     this.textContent = this.parentElement.classList.contains('expanded') ? 'Read Less' : 'Read More';
                 });
@@ -98,14 +100,35 @@
 
         // Main function to fetch data and render games
         async function main() {
-            // Replace 'YOUR_CSV_URL_HERE' with the actual URL of your CSV file
-            const csvUrl = 'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Chilefile.csv';
-            const gamesData = await fetchCSVData(csvUrl);
-            renderGames(gamesData);
+    const csvUrls = [
+        'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Chile.csv',
+        'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Denmark.csv',
+        // Add more URLs as needed
+    ];
+
+    try {
+        const gamesData = await fetchMultipleCSVData(csvUrls);
+        renderGames(gamesData);
+    } catch (error) {
+        console.error('Error fetching or processing data:', error);
+    }
+}
+
+        async function fetchMultipleCSVData(urls) {
+            const fetchPromises = urls.map(url => fetchCSVData(url));
+            const results = await Promise.all(fetchPromises);
+            return results.flat();
+        }
+
+        async function fetchCSVData(url) {
+            const response = await fetch(url);
+            const csvText = await response.text();
+            return parseCSV(csvText);
         }
 
         // Call the main function when the page loads
         window.onload = main;
     </script>
 </body>
+
 </html>
