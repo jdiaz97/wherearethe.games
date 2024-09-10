@@ -198,10 +198,9 @@ end
 function write_db(path::String,df::DataFrame)
     if isfile(path)
         current = CSV.read(path, DataFrame; delim = ";;")
-        df = unique(vcat(current,df))
-    else
-        CSV.write(path,df, delim =";;")
+        df = unique(vcat(current,df)) ## this needs to change, and just check for the name instead
     end
+    CSV.write(path,df, delim =";;")
     return nothing
 end
 
