@@ -188,22 +188,19 @@ function save_data(df::DataFrame,country::String)
     failed = select(failed, :Country, :Steam_Link)
 
     country_path = "export/"*country*".csv"
-    if isfile(country_path)
-        currenty_goods = CSV.read(country_path, DataFrame; delim = ";;")
-        goods = vcat(currenty_goods,goods)
-        goods = unique(goods)
-    else 
-        CSV.write(country_path,goods, delim =";;")
-    end
-    
-
     export_path = "export/failed.csv"
-    if isfile(export_path)
-        currenty_failed = CSV.read(export_path, DataFrame; delim = ";;")
-        failed = vcat(currenty_failed,failed)
-        failed = unique(failed)
+    write_db(country_path,goods)
+    write_db(export_path,failed)
+
+    return nothing
+end
+
+function write_db(path::String,df::DataFrame)
+    if isfile(path)
+        current = CSV.read(path, DataFrame; delim = ";;")
+        df = unique(vcat(current,df))
     else
-        CSV.write(export_path,failed, delim =";;")
+        CSV.write(path,df, delim =";;")
     end
     return nothing
 end
@@ -213,4 +210,8 @@ function get_genre(html)::String
     b = html_elements(a,".block_content_inner") 
     c = html_elements(b, ["span","a"]) |> html_text3
     return join(unique(c), ", ")
+end
+
+function scrape_steam(c::String)
+    df = scrape_mentor("data/"*c*".html",c); save_data(df,c)
 end
