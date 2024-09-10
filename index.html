@@ -101,20 +101,25 @@
             `;
         }
 
-        // Function to render games
         function renderGames(gamesData) {
             const container = document.getElementById('gameContainer');
-            container.innerHTML = ''; // Clear existing content
+            let html = '';
+
             gamesData.forEach(game => {
-                container.innerHTML += createGameCard(game);
+                html += createGameCard(game);
             });
 
+            container.innerHTML = html;
+
             // Add event listeners for "Read More" buttons
-            document.querySelectorAll('.read-more').forEach(button => {
-                button.addEventListener('click', function () {
-                    this.parentElement.classList.toggle('expanded');
-                    this.textContent = this.parentElement.classList.contains('expanded') ? 'Read Less' : 'Read More';
-                });
+            container.addEventListener('click', function (e) {
+                if (e.target.classList.contains('read-more')) {
+                    const card = e.target.closest('.game-card');
+                    if (card) {
+                        card.classList.toggle('expanded');
+                        e.target.textContent = card.classList.contains('expanded') ? 'Read Less' : 'Read More';
+                    }
+                }
             });
         }
 
