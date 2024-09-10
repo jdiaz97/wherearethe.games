@@ -16,11 +16,7 @@
         // Function to fetch and parse CSV data
         let allGames = [];  // Global variable to store all games
 
-        let uniqueCountries = new Set(); // This will store unique countries
-        // Add new countries to the set
-        uniqueCountries.add('Chile');
-        uniqueCountries.add('Denmark');
-        uniqueCountries.add('Sweden');
+        let uniqueCountries = new Set(['Chile', 'Denmark', 'Sweden', 'Finland']);
 
         async function fetchCSVData(url) {
             try {
@@ -135,11 +131,10 @@
 
         // Main function to fetch data and render games
         async function main() {
-            const csvUrls = [
-                'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Chile.csv',
-                'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Denmark.csv',
-                'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/Sweden.csv',
-            ];
+            // Dynamically generate URLs for each country
+            const baseUrl = 'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/';
+            const csvUrls = Array.from(uniqueCountries).map(country => `${baseUrl}${country}.csv`);
+
 
             try {
                 const gamesData = await fetchMultipleCSVData(csvUrls);
