@@ -164,10 +164,9 @@
 
 
             try {
-                const gamesData = await fetchMultipleCSVData(csvUrls);
-                allGames = gamesData;  // Store all fetched games in a global variable
+                allGames = await fetchMultipleCSVData(csvUrls);
 
-                renderGames(gamesData);
+                renderGames(allGames);
             } catch (error) {
                 console.error('Error fetching or processing data:', error);
             }
