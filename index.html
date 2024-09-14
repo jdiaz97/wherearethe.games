@@ -11,7 +11,7 @@
 
         gtag('config', 'G-N6YY39T8TQ');
     </script>
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Where are the games?</title>
@@ -45,6 +45,28 @@
 
         let uniqueCountries = new Set(['Chile', 'Denmark', 'Sweden', 'Finland']);
 
+        // Function to parse CSV text into an array of objects
+        function parseCSV(csvText) {
+            const rows = csvText.split('\n');
+            const headers = rows[0].split(';;');
+
+            return rows.slice(1).map(row => {
+                const values = row.split(';;');
+
+                return headers.reduce((obj, header, index) => {
+                    let value = values[index]?.trim() || '';
+
+                    // Check if the header is 'Release_Date' and try to convert it into a Date object
+                    if (header.trim() === 'Release_Date') {
+                        value = value ? new Date(value) : "To be announced";
+                    }
+
+                    obj[header.trim()] = value;
+                    return obj;
+                }, {});
+            });
+        }
+
         async function fetchCSVData(url) {
             try {
                 const response = await fetch(url);
@@ -54,19 +76,6 @@
                 console.error('Error fetching CSV:', error);
                 return [];
             }
-        }
-
-        // Function to parse CSV text into an array of objects
-        function parseCSV(csvText) {
-            const rows = csvText.split('\n');
-            const headers = rows[0].split(';;');
-            return rows.slice(1).map(row => {
-                const values = row.split(';;');
-                return headers.reduce((obj, header, index) => {
-                    obj[header.trim()] = values[index]?.trim() || '';
-                    return obj;
-                }, {});
-            });
         }
 
         // Function to create filter buttons
@@ -115,9 +124,11 @@
                             ${game.Platform}
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Release Date</span>
-                            ${game.Release_Date}
-                        </div>
+    <span class="info-label">Release Date</span>
+${game.Release_Date instanceof Date && !isNaN(game.Release_Date)
+                    ? game.Release_Date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                    : "To be announced"}  
+</div>
                         <a href="${game.Steam_Link}" class="steam-link" target="_blank">View on Steam</a>
                     </div>
                 </div>
@@ -185,6 +196,7 @@
                     throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
                 }
                 const csvText = await response.text();
+                console.log(parseCSV(csvText));
                 return parseCSV(csvText); // Process CSV into usable data
             } catch (error) {
                 console.error(`Error fetching or processing ${url}:`, error);
