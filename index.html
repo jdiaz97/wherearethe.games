@@ -81,30 +81,31 @@
             }
         }
 
+        function bitvectorAND(a, b) {
+            return a.map((value, index) => value & b[index]);
+        }
+
         function createFilterButtons() {
             const filterContainer = document.getElementById('filterButtons');
-            filterContainer.innerHTML = '<button onclick="filter_by_country(\'all\')">All Countries</button>';
+            filterContainer.innerHTML = '<select id="countryFilter" onchange="filter_by_country(this.value)">' +
+                '<option value="all">All Countries</option>';
+
+            // Assuming uniqueCountries is already defined and populated
             uniqueCountries.forEach(country => {
-                filterContainer.innerHTML += `<button onclick="filter_by_country('${country}')">${country}</button>`;
+                filterContainer.querySelector('select').innerHTML += `<option value="${country}">${country}</option>`;
             });
 
-            // Add click event listener to highlight the pressed button
-            filterContainer.addEventListener('click', function (e) {
-                if (e.target.tagName === 'BUTTON') {
-                    // Remove 'active' class from all buttons
-                    filterContainer.querySelectorAll('button').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    // Add 'active' class to the clicked button
-                    e.target.classList.add('active');
-                }
+            // Add change event listener to highlight the selected option
+            filterContainer.querySelector('select').addEventListener('change', function (e) {
+                this.classList.add('active');
             });
         }
 
         // Function to create filter buttons for years
         function createYearFilterButtons() {
             const filterContainer = document.getElementById('filterButtons-year');
-            filterContainer.innerHTML = '<button onclick="filter_by_year(\'all\')">All Years</button>';
+            filterContainer.innerHTML = '<select id="yearFilter" onchange="filter_by_year(this.value)">' +
+                '<option value="all">All Years</option>';
 
             // Get unique years from the allGames array
             const uniqueYears = [...new Set(allGames.map(game => game.Release_Date.getFullYear()))];
@@ -112,21 +113,14 @@
             // Sort the years in descending order (most recent first)
             uniqueYears.sort((a, b) => b - a);
 
-            // Create a button for each unique year
+            // Create an option for each unique year
             uniqueYears.forEach(year => {
-                filterContainer.innerHTML += `<button onclick="filter_by_year(${year})">${year}</button>`;
+                filterContainer.querySelector('select').innerHTML += `<option value="${year}">${year}</option>`;
             });
 
-            // Add click event listener to highlight the pressed button
-            filterContainer.addEventListener('click', function (e) {
-                if (e.target.tagName === 'BUTTON') {
-                    // Remove 'active' class from all buttons
-                    filterContainer.querySelectorAll('button').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    // Add 'active' class to the clicked button
-                    e.target.classList.add('active');
-                }
+            // Add change event listener to highlight the selected option
+            filterContainer.querySelector('select').addEventListener('change', function (e) {
+                this.classList.add('active');
             });
         }
 
@@ -199,7 +193,6 @@
 
         function filter_and_render(bitVector) {
             const filteredGames = allGames.filter((_, index) => bitVector[index] == 1);
-            // Render the filtered games
             renderGames(filteredGames);
         }
 
@@ -207,12 +200,12 @@
         function filter_by_country(country) {
             if (country === 'all') {
                 bitVector_countries.fill(1)
-                filter_and_render(bitVector_countries);
+                filter_and_render(bitvectorAND(bitVector_years, bitVector_countries));
             } else {
-                bitVector_countries = allGames.map((game, index) =>
-                    (game.Country === country ? 1 : 0) && bitVector_years[index]
+                bitVector_countries = allGames.map(game =>
+                    game.Country == country ? 1 : 0
                 );
-                filter_and_render(bitVector_countries);
+                filter_and_render(bitvectorAND(bitVector_years, bitVector_countries));
             }
 
             // Highlight the appropriate button
@@ -228,18 +221,19 @@
 
         // Function to filter games based on selected year
         function filter_by_year(year) {
-            if (year === 'all') {
+            console.log(year);
+            if (year == 'all') {
                 bitVector_years.fill(1)
-                filter_and_render(bitVector_years);
+                filter_and_render(bitvectorAND(bitVector_years, bitVector_countries));
             } else {
-                bitVector_years = allGames.map((game, index) => {
+                bitVector_years = allGames.map(game => {
                     // Extract the release year from the game.Release_Date (assuming it's a Date object)
                     const releaseYear = game.Release_Date.getFullYear();
 
-                    // Combine the releaseYear condition and previousConditions for the same index
-                    return (releaseYear === year && bitVector_countries[index]) ? 1 : 0;
+                    // Return 1 if the release year matches the target year, otherwise 0
+                    return releaseYear == year ? 1 : 0;
                 });
-                filter_and_render(bitVector_years);
+                filter_and_render(bitvectorAND(bitVector_years, bitVector_countries));
             }
             // Highlight the appropriate button
             const filterContainer = document.getElementById('filterButtons-year');
