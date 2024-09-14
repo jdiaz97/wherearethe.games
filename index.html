@@ -58,7 +58,7 @@
 
                     // Check if the header is 'Release_Date' and try to convert it into a Date object
                     if (header.trim() === 'Release_Date') {
-                        value = value ? new Date(value) : "To be announced";
+                        value = new Date(value);
                     }
 
                     obj[header.trim()] = value;
@@ -124,11 +124,9 @@
                             ${game.Platform}
                         </div>
                         <div class="info-item">
-    <span class="info-label">Release Date</span>
-${game.Release_Date instanceof Date && !isNaN(game.Release_Date)
-                    ? game.Release_Date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-                    : "To be announced"}  
-</div>
+                    <span class="info-label">Release Date</span>
+                        ${game.Release_Date instanceof Date && !isNaN(game.Release_Date) ? game.Release_Date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "To be announced"}  
+                        </div>
                         <a href="${game.Steam_Link}" class="steam-link" target="_blank">View on Steam</a>
                     </div>
                 </div>
