@@ -1,4 +1,8 @@
-# Steam Scraper
+# Where are the games?
+
+Website concept
+
+# The Julia part
 
 ```julia
 # We want to scrape the list of a steam curator

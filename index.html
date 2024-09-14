@@ -81,9 +81,9 @@
         // Function to create filter buttons
         function createFilterButtons() {
             const filterContainer = document.getElementById('filterButtons');
-            filterContainer.innerHTML = '<button onclick="filterGames(\'all\')">All Countries</button>';
+            filterContainer.innerHTML = '<button onclick="filter_by_country(\'all\')">All Countries</button>';
             uniqueCountries.forEach(country => {
-                filterContainer.innerHTML += `<button onclick="filterGames('${country}')">${country}</button>`;
+                filterContainer.innerHTML += `<button onclick="filter_by_country('${country}')">${country}</button>`;
             });
         }
 
@@ -156,7 +156,7 @@
         }
 
         // Function to filter games based on selected country
-        function filterGames(country) {
+        function filter_by_country(country) {
             if (country === 'all') {
                 renderGames(allGames);  // Show all games if "All Countries" is selected
             } else {
@@ -168,7 +168,7 @@
         // Main function to fetch data and render games
         async function main() {
             // Dynamically generate URLs for each country
-            const baseUrl = 'https://raw.githubusercontent.com/jdiaz97/steamscraper/main/export/';
+            const baseUrl = 'https://raw.githubusercontent.com/jdiaz97/wherearethe.games/main/export/';
             const csvUrls = Array.from(uniqueCountries).map(country => `${baseUrl}${country}.csv`);
 
 
