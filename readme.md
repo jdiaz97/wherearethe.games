@@ -21,6 +21,7 @@ CSV.write(country*".csv",df);
 # Second option, with files.
 df = scrape_mentor("previous_url.html",country)
 CSV.write(country*".csv",df)
-
+# or 
+save_data(country,df)
 ```
 

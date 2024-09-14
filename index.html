@@ -37,11 +37,14 @@
 
 <body>
     <div id="filterButtons"></div>
+    <div id="filterButtons-year"></div>
     <div class="container" id="gameContainer"></div>
 
     <script>
         // Function to fetch and parse CSV data
         let allGames = [];  // Global variable to store all games
+        let bitVector_countries = []; // Global variable to store filters
+        let bitVector_years = []; // Global variable to store filters
 
         let uniqueCountries = new Set(['Chile', 'Denmark', 'Sweden', 'Finland']);
 
@@ -78,16 +81,55 @@
             }
         }
 
-        // Function to create filter buttons
         function createFilterButtons() {
             const filterContainer = document.getElementById('filterButtons');
             filterContainer.innerHTML = '<button onclick="filter_by_country(\'all\')">All Countries</button>';
             uniqueCountries.forEach(country => {
                 filterContainer.innerHTML += `<button onclick="filter_by_country('${country}')">${country}</button>`;
             });
+
+            // Add click event listener to highlight the pressed button
+            filterContainer.addEventListener('click', function (e) {
+                if (e.target.tagName === 'BUTTON') {
+                    // Remove 'active' class from all buttons
+                    filterContainer.querySelectorAll('button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    // Add 'active' class to the clicked button
+                    e.target.classList.add('active');
+                }
+            });
         }
 
-        createFilterButtons();
+        // Function to create filter buttons for years
+        function createYearFilterButtons() {
+            const filterContainer = document.getElementById('filterButtons-year');
+            filterContainer.innerHTML = '<button onclick="filter_by_year(\'all\')">All Years</button>';
+
+            // Get unique years from the allGames array
+            const uniqueYears = [...new Set(allGames.map(game => game.Release_Date.getFullYear()))];
+
+            // Sort the years in descending order (most recent first)
+            uniqueYears.sort((a, b) => b - a);
+
+            // Create a button for each unique year
+            uniqueYears.forEach(year => {
+                filterContainer.innerHTML += `<button onclick="filter_by_year(${year})">${year}</button>`;
+            });
+
+            // Add click event listener to highlight the pressed button
+            filterContainer.addEventListener('click', function (e) {
+                if (e.target.tagName === 'BUTTON') {
+                    // Remove 'active' class from all buttons
+                    filterContainer.querySelectorAll('button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    // Add 'active' class to the clicked button
+                    e.target.classList.add('active');
+                }
+            });
+        }
+
 
         // Function to create a game card HTML
         function createGameCard(game) {
@@ -155,14 +197,59 @@
             });
         }
 
+        function filter_and_render(bitVector) {
+            const filteredGames = allGames.filter((_, index) => bitVector[index] == 1);
+            // Render the filtered games
+            renderGames(filteredGames);
+        }
+
         // Function to filter games based on selected country
         function filter_by_country(country) {
             if (country === 'all') {
-                renderGames(allGames);  // Show all games if "All Countries" is selected
+                bitVector_countries.fill(1)
+                filter_and_render(bitVector_countries);
             } else {
-                const filteredGames = allGames.filter(game => game.Country === country);
-                renderGames(filteredGames);  // Show only filtered games
+                bitVector_countries = allGames.map((game, index) =>
+                    (game.Country === country ? 1 : 0) && bitVector_years[index]
+                );
+                filter_and_render(bitVector_countries);
             }
+
+            // Highlight the appropriate button
+            const filterContainer = document.getElementById('filterButtons');
+            filterContainer.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('active');
+                if ((country === 'all' && btn.textContent === 'All Countries') ||
+                    btn.textContent === country) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Function to filter games based on selected year
+        function filter_by_year(year) {
+            if (year === 'all') {
+                bitVector_years.fill(1)
+                filter_and_render(bitVector_years);
+            } else {
+                bitVector_years = allGames.map((game, index) => {
+                    // Extract the release year from the game.Release_Date (assuming it's a Date object)
+                    const releaseYear = game.Release_Date.getFullYear();
+
+                    // Combine the releaseYear condition and previousConditions for the same index
+                    return (releaseYear === year && bitVector_countries[index]) ? 1 : 0;
+                });
+                filter_and_render(bitVector_years);
+            }
+            // Highlight the appropriate button
+            const filterContainer = document.getElementById('filterButtons-year');
+            filterContainer.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('active');
+                if ((year === 'all' && btn.textContent === 'All Years') ||
+                    btn.textContent === year) {
+                    btn.classList.add('active');
+                }
+            });
         }
 
         // Main function to fetch data and render games
@@ -174,11 +261,16 @@
 
             try {
                 allGames = await fetchMultipleCSVData(csvUrls);
-
-                renderGames(allGames);
+                bitVector_countries = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
+                bitVector_years = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
+                const bit = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
+                filter_and_render(bit);
             } catch (error) {
                 console.error('Error fetching or processing data:', error);
             }
+
+            createFilterButtons();
+            createYearFilterButtons();
         }
 
         async function fetchMultipleCSVData(urls) {
@@ -201,7 +293,7 @@
                 return []; // Return an empty array if there's an error
             }
         }
-        main()
+        main();
         // Call the main function when the page loads
         // window.onload = main;
     </script>

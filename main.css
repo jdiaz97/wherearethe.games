@@ -110,3 +110,77 @@ body {
     display: inline-block;
     margin-top: 10px;
 }
+
+#filterButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#filterButtons button {
+    background-color: #f0e6ff;  /* Light lavender background */
+    border: 2px solid #d4b3ff;  /* Soft purple border */
+    border-radius: 20px;  /* Rounded corners */
+    color: #6a0dad;  /* Dark purple text */
+    padding: 10px 15px;
+    font-size: 16px;
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;  /* Rounded font */
+    transition: all 0.3s ease;  /* Smooth transition for hover and active states */
+    cursor: pointer;
+    outline: none;
+}
+
+#filterButtons button:hover {
+    background-color: #e6d9ff;  /* Slightly darker lavender on hover */
+    transform: scale(1.05);  /* Slight grow effect on hover */
+}
+
+#filterButtons button.active {
+    background-color: #ff9fe5;  /* Soft pink background for active state */
+    border-color: #ff69b4;  /* Hot pink border for active state */
+    color: #8b008b;  /* Dark pink text for active state */
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);  /* Soft glow effect */
+    animation: wiggle 0.5s ease;  /* Wiggle animation when activated */
+}
+
+@keyframes wiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+    75% { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+}
+
+#filterButtons-year {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#filterButtons-year button {
+    background-color: #f0e6ff;  /* Light lavender background */
+    border: 2px solid #d4b3ff;  /* Soft purple border */
+    border-radius: 20px;  /* Rounded corners */
+    color: #6a0dad;  /* Dark purple text */
+    padding: 10px 15px;
+    font-size: 16px;
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;  /* Rounded font */
+    transition: all 0.3s ease;  /* Smooth transition for hover and active states */
+    cursor: pointer;
+    outline: none;
+}
+
+#filterButtons-year button:hover {
+    background-color: #e6d9ff;  /* Slightly darker lavender on hover */
+    transform: scale(1.05);  /* Slight grow effect on hover */
+}
+
+#filterButtons-year button.active {
+    background-color: #ff9fe5;  /* Soft pink background for active state */
+    border-color: #ff69b4;  /* Hot pink border for active state */
+    color: #8b008b;  /* Dark pink text for active state */
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);  /* Soft glow effect */
+    animation: wiggle 0.5s ease;  /* Wiggle animation when activated */
+}
