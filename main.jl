@@ -1,3 +1,3 @@
 include("scraper.jl")
 
-scrape_steam.(["Chile","Denmark","Sweden","Finland"])
+scrape_steam.(["Chile","Denmark","Sweden","Finland","Estonia","Austria","Hungary","Poland","Switzerland"])

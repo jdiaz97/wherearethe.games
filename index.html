@@ -46,7 +46,7 @@
         let bitVector_countries = []; // Global variable to store filters
         let bitVector_years = []; // Global variable to store filters
 
-        let uniqueCountries = new Set(['Chile', 'Denmark', 'Sweden', 'Finland']);
+        let uniqueCountries = new Set(["Chile","Denmark","Sweden","Finland","Estonia","Austria","Hungary","Poland","Switzerland"]);
 
         // Function to parse CSV text into an array of objects
         function parseCSV(csvText) {
@@ -90,7 +90,7 @@
             filterContainer.innerHTML = '<select id="countryFilter" onchange="filter_by_country(this.value)">' +
                 '<option value="all">All Countries</option>';
 
-            // Assuming uniqueCountries is already defined and populated
+            // Assuming uniqueCountries (global variable) is already defined and populated
             uniqueCountries.forEach(country => {
                 filterContainer.querySelector('select').innerHTML += `<option value="${country}">${country}</option>`;
             });
@@ -107,10 +107,7 @@
             filterContainer.innerHTML = '<select id="yearFilter" onchange="filter_by_year(this.value)">' +
                 '<option value="all">All Years</option>';
 
-            // Get unique years from the allGames array
             const uniqueYears = [...new Set(allGames.map(game => game.Release_Date.getFullYear()))];
-
-            // Sort the years in descending order (most recent first)
             uniqueYears.sort((a, b) => b - a);
 
             // Create an option for each unique year
@@ -256,7 +253,6 @@
             const baseUrl = 'https://raw.githubusercontent.com/jdiaz97/wherearethe.games/main/export/';
             const csvUrls = Array.from(uniqueCountries).map(country => `${baseUrl}${country}.csv`);
 
-
             try {
                 allGames = await fetchMultipleCSVData(csvUrls);
                 bitVector_countries = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
@@ -292,8 +288,6 @@
             }
         }
         main();
-        // Call the main function when the page loads
-        // window.onload = main;
     </script>
 </body>
 
