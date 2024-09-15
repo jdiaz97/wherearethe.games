@@ -115,7 +115,8 @@
 
             // Create an option for each unique year
             uniqueYears.forEach(year => {
-                filterContainer.querySelector('select').innerHTML += `<option value="${year}">${year}</option>`;
+                const displayYear = isNaN(year) ? "To be announced" : year;
+                filterContainer.querySelector('select').innerHTML += `<option value="${displayYear}">${displayYear}</option>`;
             });
 
             // Add change event listener to highlight the selected option
@@ -225,12 +226,15 @@
             if (year == 'all') {
                 bitVector_years.fill(1)
                 filter_and_render(bitvectorAND(bitVector_years, bitVector_countries));
+
+            } else if (year == 'To be announced') {
+                bitVector_years = allGames.map(game => {
+                    return isNaN(game.Release_Date.getTime()) ? 1 : 0;
+                });
+                filter_and_render(bitvectorAND(bitVector_years, bitVector_countries));
             } else {
                 bitVector_years = allGames.map(game => {
-                    // Extract the release year from the game.Release_Date (assuming it's a Date object)
                     const releaseYear = game.Release_Date.getFullYear();
-
-                    // Return 1 if the release year matches the target year, otherwise 0
                     return releaseYear == year ? 1 : 0;
                 });
                 filter_and_render(bitvectorAND(bitVector_years, bitVector_countries));
