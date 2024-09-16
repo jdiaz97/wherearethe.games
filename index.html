@@ -38,25 +38,27 @@
 <body>
     <div class="center-container">
         <div class="filter-row">
-            <div id="filterButtons"></div>
+            <div id="filterButtons-country"></div>
             <div id="filterButtons-year"></div>
+            <div id="filterButtons-genre"></div>
         </div>
         <div id="gameCountDisplay"></div>
     </div>
     <div class="container" id="gameContainer"></div>
 
     <script>
-        // Function to fetch and parse CSV data
         let allGames = [];  // Global variable to store all games
-        let bitVector_countries = []; // Global variable to store filters
-        let bitVector_years = []; // Global variable to store filters
+        // Global variables to store filters
+        let bitVector_countries = [];
+        let bitVector_years = [];
+        let bitVector_genres = []
 
         let uniqueCountries = new Set(["Chile", "Denmark", "Sweden", "Finland", "Estonia", "Austria", "Hungary", "Poland", "Switzerland"]);
 
         function updateGameCountDisplay(bitVector_games) {
             const sum = bitVector_games.reduce((acc, val) => acc + val, 0);
             const total = bitVector_games.length;
-            document.getElementById('gameCountDisplay').textContent = 
+            document.getElementById('gameCountDisplay').textContent =
                 `Showing ${sum} out of ${total} games`;
         }
 
@@ -94,8 +96,8 @@
         }
 
 
-        function createFilterButtons() {
-            const filterContainer = document.getElementById('filterButtons');
+        function createCountryFilterButtons() {
+            const filterContainer = document.getElementById('filterButtons-country');
             filterContainer.innerHTML = '<select id="countryFilter" onchange="filter_by_country(this.value)">' +
                 '<option value="all">All Countries</option>';
 
@@ -108,6 +110,42 @@
             filterContainer.querySelector('select').addEventListener('change', function (e) {
                 this.classList.add('active');
             });
+        }
+
+        function createGenreFilterButtons() {
+            const filterContainer = document.getElementById('filterButtons-genre');
+
+            // Genre filter
+            filterContainer.innerHTML += '<select id="genreFilter" onchange="filter_by_genre(this.value)">' +
+                '<option value="all">All Genres</option>';
+            const uniqueGenres = [...new Set(allGames.map(game => game.Genre))];
+            uniqueGenres.sort();
+            uniqueGenres.forEach(genre => {
+                const displayGenre = genre || "Unspecified";
+                filterContainer.querySelector('#genreFilter').innerHTML += `<option value="${genre}">${displayGenre}</option>`;
+            });
+
+            // Add change event listeners to highlight the selected options
+            filterContainer.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', function (e) {
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function filter_by_genre(genre) {
+            if (genre === 'all') {
+                bitVector_genres.fill(1);
+            } else {
+                bitVector_genres = allGames.map(game =>
+                    game.Genre == genre ? 1 : 0
+                );
+            }
+            refresh();
+            // Highlight the appropriate option
+            const genreFilter = document.getElementById('genreFilter');
+            genreFilter.value = genre;
+            genreFilter.classList.add('active');
         }
 
         // Function to create filter buttons for years
@@ -139,13 +177,7 @@
 
         function renderGames(gamesData) {
             const container = document.getElementById('gameContainer');
-            let html = '';
-
-            gamesData.forEach(game => {
-                html += createGameCard(game);
-            });
-
-            container.innerHTML = html;
+            container.innerHTML = gamesData.map(game => createGameCard(game)).join('');
 
             // Add event listeners for "Read More" buttons
             container.addEventListener('click', function (e) {
@@ -170,8 +202,8 @@
             renderGames(filteredGames);
         }
 
-        function vector_state(){
-            return bitvectorAND(bitVector_years, bitVector_countries)
+        function vector_state() {
+            return bitvectorAND(bitVector_years, bitVector_genres)
         }
 
 
@@ -243,7 +275,8 @@
                 console.error('Error fetching or processing data:', error);
             }
 
-            createFilterButtons();
+            createCountryFilterButtons();
+            createGenreFilterButtons();
             createYearFilterButtons();
         }
 
@@ -267,7 +300,7 @@
             }
         }
         main();
-        
+
     </script>
 </body>
 
