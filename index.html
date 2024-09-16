@@ -41,6 +41,7 @@
             <div id="filterButtons-country"></div>
             <div id="filterButtons-year"></div>
             <div id="filterButtons-genre"></div>
+            <div id="filterButtons-platforms"></div>
         </div>
         <div id="gameCountDisplay"></div>
     </div>
@@ -52,6 +53,7 @@
         let bitVector_countries = [];
         let bitVector_years = [];
         let bitVector_genres = []
+        let bitVector_platforms = []
 
         let uniqueCountries = new Set(["Chile", "Denmark", "Sweden", "Finland", "Estonia", "Austria", "Hungary", "Poland", "Switzerland"]);
 
@@ -67,7 +69,7 @@
             const rows = csvText.split('\n');
             const headers = rows[0].split(';;');
 
-            return rows.slice(1).map(row => {
+            return rows.slice(1, -1).map(row => {
                 const values = row.split(';;');
 
                 return headers.reduce((obj, header, index) => {
@@ -96,6 +98,26 @@
         }
 
 
+        async function fetchMultipleCSVData(urls) {
+            const fetchPromises = urls.map(url => fetchCSVData(url));
+            const results = await Promise.all(fetchPromises);
+            return results.flat();
+        }
+
+        async function fetchCSVData(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+                }
+                const csvText = await response.text();
+                return parseCSV(csvText); // Process CSV into usable data
+            } catch (error) {
+                console.error(`Error fetching or processing ${url}:`, error);
+                return []; // Return an empty array if there's an error
+            }
+        }
+
         function createCountryFilterButtons() {
             const filterContainer = document.getElementById('filterButtons-country');
             filterContainer.innerHTML = '<select id="countryFilter" onchange="filter_by_country(this.value)">' +
@@ -118,8 +140,13 @@
             // Genre filter
             filterContainer.innerHTML += '<select id="genreFilter" onchange="filter_by_genre(this.value)">' +
                 '<option value="all">All Genres</option>';
-            const uniqueGenres = [...new Set(allGames.map(game => game.Genre))];
+
+            // Extract all unique genres
+            const uniqueGenres = [...new Set(allGames.flatMap(game =>
+                game.Genre.split(',').map(genre => genre.trim())
+            ))];
             uniqueGenres.sort();
+
             uniqueGenres.forEach(genre => {
                 const displayGenre = genre || "Unspecified";
                 filterContainer.querySelector('#genreFilter').innerHTML += `<option value="${genre}">${displayGenre}</option>`;
@@ -138,7 +165,7 @@
                 bitVector_genres.fill(1);
             } else {
                 bitVector_genres = allGames.map(game =>
-                    game.Genre == genre ? 1 : 0
+                    game.Genre.split(',').map(g => g.trim()).includes(genre) ? 1 : 0
                 );
             }
             refresh();
@@ -167,6 +194,47 @@
             filterContainer.querySelector('select').addEventListener('change', function (e) {
                 this.classList.add('active');
             });
+        }
+
+        function createPlatformFilterButtons() {
+            const filterContainer = document.getElementById('filterButtons-platforms');
+
+            // Platform filter
+            filterContainer.innerHTML += '<select id="platformFilter" onchange="filter_by_platform(this.value)">' +
+                '<option value="all">All Platforms</option>';
+
+            // Extract all unique platforms
+            const uniquePlatforms = [...new Set(allGames.flatMap(game =>
+                game.Platform.split(',').map(platform => platform.trim())
+            ))];
+            uniquePlatforms.sort();
+
+            uniquePlatforms.forEach(platform => {
+                const displayPlatform = platform || "Unspecified";
+                filterContainer.querySelector('#platformFilter').innerHTML += `<option value="${platform}">${displayPlatform}</option>`;
+            });
+
+            // Add change event listeners to highlight the selected options
+            filterContainer.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', function (e) {
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function filter_by_platform(platform) {
+            if (platform === 'all') {
+                bitVector_platforms.fill(1);
+            } else {
+                bitVector_platforms = allGames.map(game =>
+                    game.Platform.split(',').map(p => p.trim()).includes(platform) ? 1 : 0
+                );
+            }
+            refresh();
+            // Highlight the appropriate option
+            const platformFilter = document.getElementById('platformFilter');
+            platformFilter.value = platform;
+            platformFilter.classList.add('active');
         }
 
 
@@ -203,7 +271,7 @@
         }
 
         function vector_state() {
-            return bitvectorAND(bitVector_years, bitVector_genres)
+            return bitvectorAND(bitVector_countries, bitVector_years, bitVector_genres,bitVector_platforms)
         }
 
 
@@ -269,6 +337,8 @@
                 allGames = await fetchMultipleCSVData(csvUrls);
                 bitVector_countries = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
                 bitVector_years = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
+                bitVector_genres = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
+                bitVector_platforms = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
                 filter_and_render(bitVector_years);
                 updateGameCountDisplay(bitVector_years);
             } catch (error) {
@@ -278,27 +348,9 @@
             createCountryFilterButtons();
             createGenreFilterButtons();
             createYearFilterButtons();
+            createPlatformFilterButtons();
         }
 
-        async function fetchMultipleCSVData(urls) {
-            const fetchPromises = urls.map(url => fetchCSVData(url));
-            const results = await Promise.all(fetchPromises);
-            return results.flat();
-        }
-
-        async function fetchCSVData(url) {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
-                }
-                const csvText = await response.text();
-                return parseCSV(csvText); // Process CSV into usable data
-            } catch (error) {
-                console.error(`Error fetching or processing ${url}:`, error);
-                return []; // Return an empty array if there's an error
-            }
-        }
         main();
 
     </script>
