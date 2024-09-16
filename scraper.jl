@@ -1,5 +1,6 @@
 using TidierVest, Gumbo, Cascadia
 using DataFrames, CSV
+using ProgressBars
 
 struct GameInfo
     name::String
@@ -127,10 +128,11 @@ function scrape_mentor(path::String,country::String)::DataFrame
     a = parsehtml(read(path,String))
     b = html_elements(a,".recommendation_link") ## all the recomendations of a mentor
     listgames::Vector{String} = html_attrs(b,"href")
-    listgames= cleanlink.(listgames)
+    listgames = cleanlink.(listgames)
 
     data::Vector{GameInfo} = []
-    for game in listgames # urls
+    println(country)
+    for game in ProgressBar(listgames) # urls
         try
             push!(data,get_game_info(game,country))    
         catch
@@ -139,7 +141,7 @@ function scrape_mentor(path::String,country::String)::DataFrame
     end
 
     df::DataFrame = DataFrame()
-    for d in data
+    for d::GameInfo in data
         df = vcat(df,gameinfo_df(d))
     end
 
@@ -181,9 +183,9 @@ function save_data(df::DataFrame,country::String)
         mkdir("export")
     end
 
-    bits = df[:,"Name"] .== "failed"
-    failed = df[bits,:]
-    goods = df[.!bits,:]
+    bits ::BitVector= df[:,"Name"] .== "failed"
+    failed::DataFrame= df[bits,:]
+    goods::DataFrame = df[.!bits,:]
 
     failed = select(failed, :Country, :Steam_Link)
 
@@ -198,7 +200,8 @@ end
 function write_db(path::String,df::DataFrame)
     if isfile(path)
         current = CSV.read(path, DataFrame; delim = ";;")
-        df = unique(vcat(current,df)) ## this needs to change, and just check for the name instead
+        df = vcat(current,df)
+        df = unique(df, :Steam_Link, keep=:last)
     end
     CSV.write(path,df, delim =";;")
     return nothing
@@ -207,7 +210,7 @@ end
 function get_genre(html)::String
     a = html_elements(html,"div")
     b = html_elements(a,".block_content_inner") 
-    c = html_elements(b, ["span","a"]) |> html_text3
+    c::Vector{String} = html_elements(b, ["span","a"]) |> html_text3
     return join(unique(c), ", ")
 end
 
