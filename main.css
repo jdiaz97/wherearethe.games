@@ -12,8 +12,9 @@ body {
     color: var(--text-color);
     margin: 0;
     padding: 20px;
-    background-color: #fce4ec; /* Light pink background */
-    background-image: 
+    background-color: #fce4ec;
+    /* Light pink background */
+    background-image:
         radial-gradient(#ffffff 15%, transparent 16%),
         radial-gradient(#ffffff 15%, transparent 16%);
     background-size: 60px 60px;
@@ -28,16 +29,19 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
 }
+
 .game-card {
     background-color: var(--card-background);
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.3s ease;
 }
+
 .game-card:hover {
     transform: translateY(-5px);
 }
+
 .game-header {
     background-color: var(--primary-color);
     color: white;
@@ -46,27 +50,33 @@ body {
     font-weight: bold;
     text-align: center;
 }
+
 .game-thumbnail {
     width: 100%;
     height: 200px;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
+
 .game-thumbnail:hover {
     transform: scale(1.05);
 }
+
 .game-info {
     padding: 20px;
 }
+
 .info-item {
     margin-bottom: 10px;
 }
+
 .info-label {
     font-weight: bold;
     color: var(--secondary-color);
     display: block;
     margin-bottom: 2px;
 }
+
 .steam-link {
     display: inline-block;
     background-color: #171a21;
@@ -78,20 +88,24 @@ body {
     transition: all 0.3s ease;
     text-align: center;
 }
+
 .steam-link:hover {
     background-color: #66c0f4;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+
 .description {
     position: relative;
     max-height: 100px;
     overflow: hidden;
     transition: max-height 0.3s ease;
 }
+
 .description.expanded {
     max-height: 1000px;
 }
+
 .read-more {
     position: absolute;
     bottom: 0;
@@ -101,6 +115,7 @@ body {
     cursor: pointer;
     color: var(--primary-color);
 }
+
 .genre {
     background-color: var(--primary-color);
     color: white;
@@ -120,11 +135,39 @@ body {
 
 .filter-row {
     display: flex;
-    justify-content: space-between; /* Adjusts spacing between elements */
-    align-items: center;            /* Vertically centers the divs */
-    gap: 10px;                      /* Adds some spacing between the divs */ 
+    justify-content: space-between;
+    /* Adjusts spacing between elements */
+    align-items: center;
+    /* Vertically centers the divs */
+    gap: 10px;
+    /* Adds some spacing between the divs */
 }
 
 #gameCountDisplay {
     padding: 10px;
+}
+
+/* Responsive design for smaller screens */
+@media only screen and (max-width: 768px) {
+    .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-row div {
+        margin-bottom: 10px;
+    }
+}
+
+/* Extra small devices */
+@media only screen and (max-width: 480px) {
+    .filter-row {
+        padding: 5px;
+        gap: 5px;
+    }
+
+    .filter-row div {
+        padding: 8px;
+        font-size: 14px;
+    }
 }
