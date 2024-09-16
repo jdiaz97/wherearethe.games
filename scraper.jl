@@ -46,6 +46,9 @@ function get_game_info(url::String,country::String)
     name = html_elements(html, ".apphub_AppName")[1] |> html_text3
     description = html_elements(html, ".game_description_snippet")[1] |> html_text3
     description = replace(description, "\t" => "")
+    if length(description) > 185
+        description = description[1:185]
+    end
     developer_names = "Unknown"
     publisher_names = "Unknown"
     try

@@ -51,7 +51,7 @@
         let bitVector_countries = []; // Global variable to store filters
         let bitVector_years = []; // Global variable to store filters
 
-        let uniqueCountries = new Set(["Chile", "Denmark", "Sweden", "Finland", "Estonia", "Austria", "Hungary", "Poland", "Switzerland","Japan"]);
+        let uniqueCountries = new Set(["Chile", "Denmark", "Sweden", "Finland", "Estonia", "Austria", "Hungary", "Poland", "Switzerland"]);
 
         function updateGameCountDisplay(bitVector_games) {
             const sum = bitVector_games.reduce((acc, val) => acc + val, 0);
@@ -134,46 +134,7 @@
 
         // Function to create a game card HTML
         function createGameCard(game) {
-            return `
-                <div class="game-card">
-                    <div class="game-header">${game.Name}</div>
-                    <img src="${game.Thumbnail}" alt="${game.Name} Thumbnail" class="game-thumbnail" loading="lazy">
-                    <div class="game-info">
-                        <div class="info-item">
-                            <span class="info-label">Country</span>
-                            ${game.Country}
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Genre</span>
-                            <span class="genre">${game.Genre}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Description</span>
-                            <div class="description">
-                                ${game.Description}
-                                <span class="read-more">Read More</span>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Publisher</span>
-                            ${game.Publisher_Names}
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Developer</span>
-                            ${game.Developer_Names}
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Platform</span>
-                            ${game.Platform}
-                        </div>
-                        <div class="info-item">
-                    <span class="info-label">Release Date</span>
-                        ${game.Release_Date instanceof Date && !isNaN(game.Release_Date) ? game.Release_Date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "To be announced"}  
-                        </div>
-                        <a href="${game.Steam_Link}" class="steam-link" target="_blank">View on Steam</a>
-                    </div>
-                </div>
-            `;
+            return `<div class="game-card"><div class="game-header">${game.Name}</div><img src="${game.Thumbnail}" alt="${game.Name} Thumbnail" class="game-thumbnail" loading="lazy"><div class="game-info"><div class="info-item"><span class="info-label">Country</span>${game.Country}</div><div class="info-item"><span class="info-label">Genre</span><span class="genre">${game.Genre}</span></div><div class="info-item"><span class="info-label">Description</span><div class="description">${game.Description}<span class="read-more">Read More</span></div></div><div class="info-item"><span class="info-label">Publisher</span>${game.Publisher_Names}</div><div class="info-item"><span class="info-label">Developer</span>${game.Developer_Names}</div><div class="info-item"><span class="info-label">Platform</span>${game.Platform}</div><div class="info-item"><span class="info-label">Release Date</span>${game.Release_Date instanceof Date && !isNaN(game.Release_Date) ? game.Release_Date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "To be announced"}</div><a href="${game.Steam_Link}" class="steam-link" target="_blank">View on Steam</a></div></div>`;
         }
 
         function renderGames(gamesData) {
@@ -242,7 +203,6 @@
 
         // Function to filter games based on selected year
         function filter_by_year(year) {
-            console.log(year);
             if (year == 'all') {
                 bitVector_years.fill(1)
             } else if (year == 'To be announced') {
@@ -277,9 +237,8 @@
                 allGames = await fetchMultipleCSVData(csvUrls);
                 bitVector_countries = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
                 bitVector_years = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
-                const bit = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
-                filter_and_render(bit);
-                updateGameCountDisplay(bit);
+                filter_and_render(bitVector_years);
+                updateGameCountDisplay(bitVector_years);
             } catch (error) {
                 console.error('Error fetching or processing data:', error);
             }
@@ -301,7 +260,6 @@
                     throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
                 }
                 const csvText = await response.text();
-                console.log(parseCSV(csvText));
                 return parseCSV(csvText); // Process CSV into usable data
             } catch (error) {
                 console.error(`Error fetching or processing ${url}:`, error);
@@ -309,6 +267,7 @@
             }
         }
         main();
+        
     </script>
 </body>
 
