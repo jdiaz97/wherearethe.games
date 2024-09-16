@@ -184,3 +184,22 @@ body {
     box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);  /* Soft glow effect */
     animation: wiggle 0.5s ease;  /* Wiggle animation when activated */
 }
+
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-row {
+    display: flex;
+    gap: 10px; /* Optional: Adjust the spacing between the two divs */
+}
+
+#filterButtons,
+#filterButtons-year,
+#gameCountDisplay {
+    /* Add any specific styles you want for these divs */
+    padding: 10px;
+}
