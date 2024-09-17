@@ -3,7 +3,7 @@ using PythonCall
 const duck = pyimport("duckduckgo_search").DDGS
 
 function search_console(name::String,base_url::String)::Dict
-    sleep(3)
+    sleep(5)
     return pyconvert(Dict,duck().text(name*" "*base_url,max_results=1)[0])
 end
 

@@ -1,30 +1,41 @@
 include("ps.jl")
+using DataFrames, CSV, ProgressBars
 
-using DataFrames, CSV
+function p(column::Symbol,df::DataFrame,name::String,func::Function)::String
+    value::String = df[i,column]
+    if (value == "Unknown")
+        return func(name) 
+    else
+        return value
+    end
+end
 
 function add_links(file::String)
     df::DataFrame = CSV.read(file, DataFrame; delim = ";;")
-    # Initialize columns
-    df[:,:Epic_Link] .= ""
-    df[:,:Playstation_Link] .= ""
-    df[:,:Xbox_Link] .= ""
-    df[:,:Switch_link] .= ""
 
     names = df[:,:Name]
-    for i in eachindex(names)
-        df[i,:Epic_Link] = get_epic(names[i])
-        df[i,:Playstation_Link] = get_playstation(names[i])
-        df[i,:Xbox_Link] = get_xbox(names[i])
-        df[i,:Switch_link] = get_switch(names[i])
+    for i in ProgressBar(eachindex(names))
+        for (column, func) in [
+            (:Epic_Link, get_epic),
+            (:Playstation_Link, get_playstation),
+            (:Xbox_Link, get_xbox),
+            (:Switch_Link, get_switch)
+        ] ### what are enums???
+            df[i, column] = p(column, df, name, func)
+        end
     end
-    CSV.write(path,df, delim =";;")
+    CSV.write(file,df, delim =";;")
     return nothing
 end
 
-path = "export"
-files = path*"/".*readdir(path)
+path = "export/"
+csvs = [
+    "Sweden.csv",
+    "Switzerland.csv"
+]
+# global const files::Vector{String} = path*.*(readdir(path)[6:7])
+global const files::Vector{String} = path.*csvs 
 for file in files
     println(file)
     add_links(file)
 end
-
