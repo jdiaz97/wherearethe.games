@@ -24,7 +24,7 @@ end
 
 path = "../export/"
 csvs = [
-    # "Sweden.csv",
+    "Sweden.csv",
     "Switzerland2.csv"
 ]
 # global const files::Vector{String} = path*.*(readdir(path)[6:7])
