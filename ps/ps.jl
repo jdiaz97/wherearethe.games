@@ -22,7 +22,6 @@ const epic::String = "https://store.epicgames.com/en-US/"
 
 function get_playstation(game::String)::String
     data = search_console(game, playstation)
-    
     cond1 = (occursin("product",data["href"]) || occursin("concept",data["href"])) && occursin("store.playstation.com",data["href"])
     cond2 = occursin(lowercase(game)*" -",lowercase(data["title"])) || occursin(lowercase(game)*" |",lowercase(data["title"]))
     saveif(cond1,cond2,data)
