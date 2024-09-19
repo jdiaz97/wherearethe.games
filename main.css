@@ -258,3 +258,36 @@ body {
 .nav-links a:hover::after {
     width: 100%;
 }
+
+.container2 {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border: 3px solid #FF1493;
+    transition: all 0.3s ease;
+}
+.container2:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+.intro {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.form-container {
+    display: flex;
+    justify-content: center;
+}
+.cute-image {
+    max-width: 200px;
+    margin: 2rem auto;
+    display: block;
+}
