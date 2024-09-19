@@ -110,10 +110,28 @@ body {
     bottom: 0;
     right: 0;
     background-color: var(--card-background);
-    padding: 5px 10px;
-    cursor: pointer;
     color: var(--primary-color);
-}
+    padding: 8px 15px;
+    cursor: pointer;
+    border-top-left-radius: 12px;
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .read-more:hover {
+    background-color: var(--primary-color);
+    color: var(--card-background);
+    transform: translateY(-2px);
+    box-shadow: -3px -3px 7px rgba(0, 0, 0, 0.15);
+  }
+  
+  .read-more::before {
+    content: '♥ ';
+    font-size: 12px;
+    margin-right: 3px;
+  }
 
 .genre {
     background-color: var(--primary-color);
