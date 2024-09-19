@@ -41,12 +41,24 @@
             <div class="nav-logo">
                 <a href="https://wherearethe.games">Where are the games?</a>
             </div>
+            <button class="nav-toggle" aria-label="toggle navigation"></button>
+                ☰
+            </button>
             <div class="nav-links">
                 <a href="/contribute">Add data</a>
                 <a href="/contact">Contact</a>
             </div>
         </div>
     </nav>
+
+    <script>
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
     
 
 </body>

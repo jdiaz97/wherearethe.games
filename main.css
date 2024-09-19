@@ -225,6 +225,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative; /
 }
 
 .nav-logo a {
@@ -308,4 +309,40 @@ h1 {
     max-width: 200px;
     margin: 2rem auto;
     display: block;
+}
+
+.nav-toggle {
+    display: none;
+    background-color: var(--primary-color);
+    border: 2px solid #fff;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 5px;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    .nav-links.active {
+        display: flex;
+        flex-direction: column;
+    }
+    .nav-links a {
+        margin: 0.5rem 0;
+    }
+    .nav-toggle {
+        display: block;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
 }

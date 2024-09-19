@@ -41,6 +41,9 @@
             <div class="nav-logo">
                 <a href="https://wherearethe.games">Where are the games?</a>
             </div>
+            <button class="nav-toggle" aria-label="toggle navigation">
+                ☰
+            </button>
             <div class="nav-links">
                 <a href="/contribute">Add data</a>
                 <a href="/contact">Contact</a>
@@ -67,6 +70,13 @@
         let bitVector_platforms = []
 
         let uniqueCountries = new Set(["Chile", "Denmark", "Sweden", "Finland", "Estonia", "Austria", "Hungary", "Poland", "Switzerland"]);
+
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
 
         function updateGameCountDisplay(bitVector_games) {
             const sum = bitVector_games.reduce((acc, val) => acc + val, 0);
@@ -256,9 +266,14 @@
     <div class="game-info">
         <div class="info-item"><span class="info-label">Country</span>${game.Country}</div>
         <div class="info-item"><span class="info-label">Genre</span><span class="genre">${game.Genre}</span></div>
-        <div class="info-item"><span class="info-label">Description</span>
-            <div class="description">${game.Description}<span class="read-more">Read More</span></div>
-        </div>
+        <div class="info-item">
+    <span class="info-label">Description</span>
+    <div class="description">
+        <span class="game-description">${game.Description}</span>
+        <span class="read-more" id="readMoreBtn">Read More</span>
+    </div>
+    <div id="message" style="display: none; color: red;">Not available yet</div>
+</div>
         <div class="info-item"><span class="info-label">Publisher</span>${game.Publisher_Names}</div>
         <div class="info-item"><span class="info-label">Developer</span>${game.Developer_Names}</div>
         <div class="info-item"><span class="info-label">Platform</span>${game.Platform}</div>
@@ -290,17 +305,6 @@ ${game.Switch_Link && game.Switch_Link !== "Unknown" ? `
         function renderGames(gamesData) {
             const container = document.getElementById('gameContainer');
             container.innerHTML = gamesData.map(game => createGameCard(game)).join('');
-
-            // Add event listeners for "Read More" buttons
-            container.addEventListener('click', function (e) {
-                if (e.target.classList.contains('read-more')) {
-                    const card = e.target.closest('.game-card');
-                    if (card) {
-                        card.classList.toggle('expanded');
-                        e.target.textContent = card.classList.contains('expanded') ? 'Read Less' : 'Read More';
-                    }
-                }
-            });
         }
 
         function bitvectorAND(...vectors) {
