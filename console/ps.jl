@@ -3,8 +3,17 @@ using PythonCall
 const duck = pyimport("duckduckgo_search").DDGS
 
 function search_console(name::String,base_url::String)::Dict
-    sleep(5)
-    return pyconvert(Dict,duck().text(name*" "*base_url,max_results=1)[0])
+    sleep(3)
+    success = false
+    while !success
+        try
+            value::Dict = pyconvert(Dict,duck().text(name*" "*base_url,max_results=1)[0])
+            success = true
+            return value
+        catch
+            sleep(4)
+        end
+    end
 end
 
 function saveif(cond1::Bool,cond2::Bool,data::Dict)::String

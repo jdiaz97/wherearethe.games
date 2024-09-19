@@ -11,7 +11,6 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     margin: 0;
-    padding: 20px;
     background-color: #fce4ec;
     /* Light pink background */
     background-image:
@@ -175,10 +174,87 @@ body {
 .platform-link {
     display: inline-block;
     margin-right: 10px;
-  }
-  
-  .platform-logo {
+}
+
+.platform-logo {
     width: 32px;
     height: 32px;
     object-fit: contain;
-  }
+}
+
+.navbar {
+    background-color: rgba(255, 255, 255, 0.2);
+    /* Very light, semi-transparent white */
+    padding: 10px 0;
+    width: 100%;
+    top: 0;
+    left: 0;
+    backdrop-filter: blur(5px);
+    /* Adds a slight blur effect */
+    -webkit-backdrop-filter: blur(5px);
+    /* For Safari support */
+    transition: background-color 0.3s ease;
+}
+
+.navbar:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    /* Slightly more opaque on hover */
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo a {
+    color: #FF1493;
+    /* Darker pink for better contrast */
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.nav-logo a:hover {
+    text-shadow: 0 0 5px rgba(255, 20, 147, 0.5);
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: #FF1493;
+    /* Darker pink for better contrast */
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 5px 0;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #FF1493;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #C71585;
+    /* Medium Violet Red for hover state */
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
