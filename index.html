@@ -305,6 +305,16 @@ ${game.Switch_Link && game.Switch_Link !== "Unknown" ? `
         function renderGames(gamesData) {
             const container = document.getElementById('gameContainer');
             container.innerHTML = gamesData.map(game => createGameCard(game)).join('');
+
+            container.addEventListener('click', function (e) {
+                if (e.target.classList.contains('read-more')) {
+                    const card = e.target.closest('.game-card');
+                    if (card) {
+                        card.classList.toggle('expanded');
+                        e.target.textContent = card.classList.contains('expanded') ? 'Not available yet, sorry!' : 'Read More';
+                    }
+                }
+            });
         }
 
         function bitvectorAND(...vectors) {
