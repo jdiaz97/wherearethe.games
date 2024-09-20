@@ -56,7 +56,24 @@
             <div id="filterButtons-year"></div>
             <div id="filterButtons-genre"></div>
             <div id="filterButtons-platforms"></div>
+
+            <!-- Order By Section -->
+            <div id="filterButtons-orderby" class="order-section">
+                <label for="order-by">Order by: </label>
+                <select id="order-by">
+                    <option value="alphabetical">Alphabetical</option>
+                    <!-- <option value="date">Date</option> -->
+                </select>
+                <button id="sort-toggle" class="sort-button" data-order="ascending">
+                    <span id="sort-text">Ascending</span>
+                    <span id="arrow">↑</span>
+                </button>
+            </div>
+
+
         </div>
+
+
         <div id="gameCountDisplay"></div>
     </div>
     <div class="container" id="gameContainer"></div>
@@ -73,6 +90,16 @@
 
         const navToggle = document.querySelector('.nav-toggle');
         const navLinks = document.querySelector('.nav-links');
+
+        // ascending and descending
+        document.getElementById('sort-toggle').addEventListener('click', function () {
+            const sortButton = document.getElementById('sort-toggle');
+            const currentOrder = sortButton.getAttribute('data-order');
+            const newOrder = currentOrder === 'ascending' ? 'descending' : 'ascending';
+            sortButton.setAttribute('data-order', newOrder);
+            document.getElementById('sort-text').innerText = newOrder.charAt(0).toUpperCase() + newOrder.slice(1);
+        });
+
 
         navToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
@@ -410,6 +437,55 @@ ${game.Switch_Link && game.Switch_Link !== "Unknown" ? `
         }
 
         main();
+
+        // Assume allGames is an array of objects with Name and Release_Date properties
+
+const orderBySelect = document.getElementById('order-by');
+const sortToggleButton = document.getElementById('sort-toggle');
+let currentSortOrder = 'ascending';
+
+function sortGames() {
+    const orderBy = orderBySelect.value;
+    const sortOrder = currentSortOrder;
+
+    // Create an array of indices
+    let indices = Array.from(Array(allGames.length).keys());
+
+    // Sort the indices based on the game data
+    indices.sort((a, b) => {
+        let comparison = 0;
+        if (orderBy === 'alphabetical') {
+            comparison = allGames[a].Name.localeCompare(allGames[b].Name);
+        } else if (orderBy === 'date') {
+            comparison = new Date(allGames[a].Release_Date) - new Date(allGames[b].Release_Date);
+        }
+        return sortOrder === 'ascending' ? comparison : -comparison;
+    });
+
+    // Use the sorted indices to reorder allGames and bitvectors
+    allGames = indices.map(i => allGames[i]);
+    bitVector_countries = indices.map(i => bitVector_countries[i]);
+    bitVector_years = indices.map(i => bitVector_years [i]);
+    bitVector_genres = indices.map(i => bitVector_genres[i]);
+    bitVector_platforms = indices.map(i => bitVector_platforms[i]);
+
+    // Here you would typically update your UI to reflect the new order
+    refresh();
+}
+
+orderBySelect.addEventListener('change', sortGames);
+
+sortToggleButton.addEventListener('click', () => {
+    currentSortOrder = currentSortOrder === 'ascending' ? 'descending' : 'ascending';
+    sortToggleButton.setAttribute('data-order', currentSortOrder);
+    document.getElementById('sort-text').textContent = currentSortOrder.charAt(0).toUpperCase() + currentSortOrder.slice(1);
+    document.getElementById('arrow').textContent = currentSortOrder === 'ascending' ? '↑' : '↓';
+    sortGames();
+});
+
+// Initial sort
+sortGames();
+
 
     </script>
 </body>

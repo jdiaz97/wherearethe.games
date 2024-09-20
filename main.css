@@ -346,3 +346,52 @@ h1 {
         right: 1rem;
     }
 }
+
+#order-by {
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.sort-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+#arrow {
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.sort-button[data-order="ascending"] #arrow {
+    transform: rotate(0deg);
+}
+
+.sort-button[data-order="descending"] #arrow {
+    transform: rotate(180deg);
+}
+
+.order-section {
+    display: flex;
+    align-items: center; /* Keeps label, select, and button in the same row */
+}
+
+#order-by {
+    padding: 5px;
+    margin-left: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.sort-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
