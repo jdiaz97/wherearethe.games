@@ -444,8 +444,16 @@ const orderBySelect = document.getElementById('order-by');
 const sortToggleButton = document.getElementById('sort-toggle');
 let currentSortOrder = 'ascending';
 
+function reorder_by_indices(indices){
+    // Use the sorted indices to reorder allGames and bitvectors
+    allGames = indices.map(i => allGames[i]);
+    bitVector_countries = indices.map(i => bitVector_countries[i]);
+    bitVector_years = indices.map(i => bitVector_years [i]);
+    bitVector_genres = indices.map(i => bitVector_genres[i]);
+    bitVector_platforms = indices.map(i => bitVector_platforms[i]);
+}
+
 function sortGames() {
-    const orderBy = orderBySelect.value;
     const sortOrder = currentSortOrder;
 
     // Create an array of indices
@@ -453,23 +461,11 @@ function sortGames() {
 
     // Sort the indices based on the game data
     indices.sort((a, b) => {
-        let comparison = 0;
-        if (orderBy === 'alphabetical') {
-            comparison = allGames[a].Name.localeCompare(allGames[b].Name);
-        } else if (orderBy === 'date') {
-            comparison = new Date(allGames[a].Release_Date) - new Date(allGames[b].Release_Date);
-        }
+        let comparison = allGames[a].Name.localeCompare(allGames[b].Name);
         return sortOrder === 'ascending' ? comparison : -comparison;
     });
 
-    // Use the sorted indices to reorder allGames and bitvectors
-    allGames = indices.map(i => allGames[i]);
-    bitVector_countries = indices.map(i => bitVector_countries[i]);
-    bitVector_years = indices.map(i => bitVector_years [i]);
-    bitVector_genres = indices.map(i => bitVector_genres[i]);
-    bitVector_platforms = indices.map(i => bitVector_platforms[i]);
-
-    // Here you would typically update your UI to reflect the new order
+    reorder_by_indices(indices)
     refresh();
 }
 
@@ -482,7 +478,6 @@ sortToggleButton.addEventListener('click', () => {
     document.getElementById('arrow').textContent = currentSortOrder === 'ascending' ? '↑' : '↓';
     sortGames();
 });
-
 
 
     </script>
