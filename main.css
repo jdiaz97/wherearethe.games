@@ -361,16 +361,18 @@ h1 {
     align-items: center;
 }
 
-#arrow {
+.arrow {
     font-size: 14px;
     margin-left: 5px;
+    display: inline-block; /* To ensure transform works */
+    transition: transform 0.2s; /* Optional: Adds a smooth animation */
 }
 
-.sort-button[data-order="ascending"] #arrow {
+.sort-button[data-order="ascending"] .arrow {
     transform: rotate(0deg);
 }
 
-.sort-button[data-order="descending"] #arrow {
+.sort-button[data-order="descending"] .arrow {
     transform: rotate(180deg);
 }
 

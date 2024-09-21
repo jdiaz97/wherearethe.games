@@ -454,9 +454,8 @@ function reorder_by_indices(indices){
 }
 
 function sortGames() {
-    const sortOrder = currentSortOrder;
+    const sortOrder = currentSortOrder; // Ascending vs Descending
 
-    // Create an array of indices
     let indices = Array.from(Array(allGames.length).keys());
 
     // Sort the indices based on the game data
