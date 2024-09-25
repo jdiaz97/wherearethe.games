@@ -44,7 +44,8 @@
         <div class="nav-container">
             <div class="nav-logo">
                 <a href="https://wherearethe.games">Where are the games?
-                    <img src="assets/logo.png" alt="logo" style="width: 50px; height: 50px; position: absolute; top: -15px; margin-left: 10px; margin-top: 5px">
+                    <img src="assets/logo.png" alt="logo"
+                        style="width: 50px; height: 50px; position: absolute; top: -15px; margin-left: 10px; margin-top: 5px">
                 </a>
             </div>
             <button class="nav-toggle" aria-label="toggle navigation">
@@ -54,7 +55,8 @@
                 <a href="/contribute">Add data</a>
                 <a href="/contact">Contact</a>
                 <a href="https://www.instagram.com/wherearethe.games/" aria-label="Instagram">
-                    <img src="https://cdn-icons-png.flaticon.com/256/2111/2111463.png" alt="Instagram" style="width: 25px; height: 25px;">
+                    <img src="https://cdn-icons-png.flaticon.com/256/2111/2111463.png" alt="Instagram"
+                        style="width: 25px; height: 25px;">
                 </a>
             </div>
         </div>
@@ -338,19 +340,22 @@ ${game.Switch_Link && game.Switch_Link !== "Unknown" ? `
 </div>`;
         }
 
+        // Global event listener
+        document.getElementById('gameContainer').addEventListener('click', handleCardClick);
+
+        function handleCardClick(e) {
+            if (e.target.classList.contains('read-more')) {
+                const card = e.target.closest('.game-card');
+                if (card) {
+                    const isExpanded = card.classList.toggle('expanded');
+                    e.target.textContent = isExpanded ? 'Not available yet, sorry!' : 'Read More';
+                }
+            }
+        }
+
         function renderGames(gamesData) {
             const container = document.getElementById('gameContainer');
             container.innerHTML = gamesData.map(game => createGameCard(game)).join('');
-
-            container.addEventListener('click', function (e) {
-                if (e.target.classList.contains('read-more')) {
-                    const card = e.target.closest('.game-card');
-                    if (card) {
-                        card.classList.toggle('expanded');
-                        e.target.textContent = card.classList.contains('expanded') ? 'Not available yet, sorry!' : 'Read More';
-                    }
-                }
-            });
         }
 
         function bitvectorAND(...vectors) {
@@ -449,43 +454,43 @@ ${game.Switch_Link && game.Switch_Link !== "Unknown" ? `
 
         // Assume allGames is an array of objects with Name and Release_Date properties
 
-const orderBySelect = document.getElementById('order-by');
-const sortToggleButton = document.getElementById('sort-toggle');
-let currentSortOrder = 'ascending';
+        const orderBySelect = document.getElementById('order-by');
+        const sortToggleButton = document.getElementById('sort-toggle');
+        let currentSortOrder = 'ascending';
 
-function reorder_by_indices(indices){
-    // Use the sorted indices to reorder allGames and bitvectors
-    allGames = indices.map(i => allGames[i]);
-    bitVector_countries = indices.map(i => bitVector_countries[i]);
-    bitVector_years = indices.map(i => bitVector_years [i]);
-    bitVector_genres = indices.map(i => bitVector_genres[i]);
-    bitVector_platforms = indices.map(i => bitVector_platforms[i]);
-}
+        function reorder_by_indices(indices) {
+            // Use the sorted indices to reorder allGames and bitvectors
+            allGames = indices.map(i => allGames[i]);
+            bitVector_countries = indices.map(i => bitVector_countries[i]);
+            bitVector_years = indices.map(i => bitVector_years[i]);
+            bitVector_genres = indices.map(i => bitVector_genres[i]);
+            bitVector_platforms = indices.map(i => bitVector_platforms[i]);
+        }
 
-function sortGames() {
-    const sortOrder = currentSortOrder; // Ascending vs Descending
+        function sortGames() {
+            const sortOrder = currentSortOrder; // Ascending vs Descending
 
-    let indices = Array.from(Array(allGames.length).keys());
+            let indices = Array.from(Array(allGames.length).keys());
 
-    // Sort the indices based on the game data
-    indices.sort((a, b) => {
-        let comparison = allGames[a].Name.localeCompare(allGames[b].Name);
-        return sortOrder === 'ascending' ? comparison : -comparison;
-    });
+            // Sort the indices based on the game data
+            indices.sort((a, b) => {
+                let comparison = allGames[a].Name.localeCompare(allGames[b].Name);
+                return sortOrder === 'ascending' ? comparison : -comparison;
+            });
 
-    reorder_by_indices(indices)
-    refresh();
-}
+            reorder_by_indices(indices)
+            refresh();
+        }
 
-orderBySelect.addEventListener('change', sortGames);
+        orderBySelect.addEventListener('change', sortGames);
 
-sortToggleButton.addEventListener('click', () => {
-    currentSortOrder = currentSortOrder === 'ascending' ? 'descending' : 'ascending';
-    sortToggleButton.setAttribute('data-order', currentSortOrder);
-    document.getElementById('sort-text').textContent = currentSortOrder.charAt(0).toUpperCase() + currentSortOrder.slice(1);
-    document.getElementById('arrow').textContent = currentSortOrder === 'ascending' ? '↑' : '↓';
-    sortGames();
-});
+        sortToggleButton.addEventListener('click', () => {
+            currentSortOrder = currentSortOrder === 'ascending' ? 'descending' : 'ascending';
+            sortToggleButton.setAttribute('data-order', currentSortOrder);
+            document.getElementById('sort-text').textContent = currentSortOrder.charAt(0).toUpperCase() + currentSortOrder.slice(1);
+            document.getElementById('arrow').textContent = currentSortOrder === 'ascending' ? '↑' : '↓';
+            sortGames();
+        });
 
 
     </script>
