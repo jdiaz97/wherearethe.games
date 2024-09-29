@@ -28,26 +28,16 @@ function clean_ifexists(df::DataFrame)::DataFrame
     return return_df
 end
 
-df = is_game_onlist(df)
+df = clean_ifexists(df)
 
-function extract_data(df::DataFrame)::DataFrame
-    data::Vector{GameInfo} = []
-    for i in ProgressBar(1:nrow(df)) # urls
-        try
-            push!(data,get_game_info(df[i,:url],df[i,:country]))    
-        catch
-            push!(data,failed_info(df[i,:url],df[i,:country]))
-        end
+if nrow(df) > 0
+    df = extract_data(df)
+    unique_countries = unique(df[:,:Country])
+
+    for unique_country in unique_countries
+        sliced_df = df[df[:,:Country] .== unique_country,:]
+        save_data(sliced_df,unique_country)
     end
-
-
-    df_final::DataFrame = DataFrame()
-        for d::GameInfo in data
-            df_final = vcat(df_final,gameinfo_df(d))
-        end
-
-    return df_final
+    else 
+        println("No new data")
 end
-
-
-df = extract_data(df)

@@ -135,6 +135,24 @@ function gameinfo_df(a::GameInfo)::DataFrame
     return df
 end
 
+function extract_data(df::DataFrame)::DataFrame
+    data::Vector{GameInfo} = []
+    for i in ProgressBar(1:nrow(df)) # urls
+        try
+            push!(data,get_game_info(df[i,:url],df[i,:country]))    
+        catch
+            push!(data,failed_info(df[i,:url],df[i,:country]))
+        end
+    end
+
+    df_final::DataFrame = DataFrame()
+        for d::GameInfo in data
+            df_final = vcat(df_final,gameinfo_df(d))
+        end
+
+    return df_final
+end
+
 """
 This function gets the path of a HTML file that contains a Steam Mentor.
 It also gets the name of the country.
@@ -145,22 +163,25 @@ function scrape_mentor(path::String,country::String)::DataFrame
     listgames::Vector{String} = html_attrs(b,"href")
     listgames = cleanlink.(listgames)
 
-    data::Vector{GameInfo} = []
-    println(country)
-    for game in ProgressBar(listgames) # urls
-        try
-            push!(data,get_game_info(game,country))    
-        catch
-            push!(data,failed_info(game,country))
-        end
-    end
+    df_data = DataFrame(url = listgames, country = country)
+    return extract_data(df_data)
 
-    df::DataFrame = DataFrame()
-    for d::GameInfo in data
-        df = vcat(df,gameinfo_df(d))
-    end
+    # data::Vector{GameInfo} = []
+    # println(country)
+    # for game in ProgressBar(listgames) # urls
+    #     try
+    #         push!(data,get_game_info(game,country))    
+    #     catch
+    #         push!(data,failed_info(game,country))
+    #     end
+    # end
 
-    return df
+    # df::DataFrame = DataFrame()
+    # for d::GameInfo in data
+    #     df = vcat(df,gameinfo_df(d))
+    # end
+
+    # return df
 end
 
 function scrape_mentor2(listgames::Vector{String},country::String)::DataFrame
