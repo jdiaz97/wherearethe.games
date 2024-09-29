@@ -137,6 +137,7 @@ end
 
 function extract_data(df::DataFrame)::DataFrame
     data::Vector{GameInfo} = []
+    println(unique(df[:,:country]))
     for i in ProgressBar(1:nrow(df)) # urls
         try
             push!(data,get_game_info(df[i,:url],df[i,:country]))    

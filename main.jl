@@ -6,4 +6,4 @@ countries::Vector{String} = ["Chile","Denmark","Sweden","Finland","Estonia","Aus
 
 scrape_steam.(countries)
 add_contributions()
-add_consoles(["Colombia","Canada","Chile","Poland"])
+add_consoles(countries)
