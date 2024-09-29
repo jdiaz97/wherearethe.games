@@ -1,4 +1,5 @@
 include("../scraper.jl")
+include("../console/consoles.jl")
 using HTTP
 
 url = "https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv"
@@ -38,6 +39,8 @@ if nrow(df) > 0
         sliced_df = df[df[:,:Country] .== unique_country,:]
         save_data(sliced_df,unique_country)
     end
-    else 
-        println("No new data")
+
+    check_links(unique_countries) ## we will add the console links here!
+else 
+    println("No new data")
 end

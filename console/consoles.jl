@@ -1,6 +1,7 @@
 ENV["JULIA_CONDAPKG_BACKEND"] = "Null"
 using PythonCall
 const duck = pyimport("duckduckgo_search").DDGS
+using DataFrames, CSV, ProgressBars
 
 function search_console(name::String,base_url::String)::Dict
     sleep(3)
@@ -55,4 +56,36 @@ function get_epic(game::String)::String
     cond1 = occursin("/p/",data["href"]) && occursin(lowercase(split(game)[1]),data["href"]) && occursin("store.epicgames.com",data["href"])
     cond2 = occursin(lowercase(game*" |"),lowercase(data["title"])) 
     saveif(cond1,cond2,data)
+end
+
+function add_links(file::String)
+    df::DataFrame = CSV.read(file, DataFrame, stringtype=String; delim = ";;")
+
+    names::Vector{String} = df[:,:Name]
+    for i in ProgressBar(eachindex(names))
+        for (column, get_value) in [
+            (:Epic_Link, get_epic),
+            (:Playstation_Link, get_playstation),
+            (:Xbox_Link, get_xbox),
+            (:Switch_Link, get_switch)
+        ] ### what are enums???
+            value = df[i,column]
+            if (!ismissing(value))
+                if (value == "Unknown")
+                    df[i, column] = get_value(names[i]) 
+                end
+            end
+        end
+    end
+    CSV.write(file,df, delim =";;")
+    return nothing
+end
+
+function check_links(countries::Vector{String})
+    files::Vector{String} = "export/".*countries.*".csv"
+
+    for file in files
+        println(file)
+        add_links(file)
+    end
 end
