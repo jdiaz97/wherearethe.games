@@ -12,9 +12,11 @@ function add_links(file::String)
             (:Xbox_Link, get_xbox),
             (:Switch_Link, get_switch)
         ] ### what are enums???
-            value::String = df[i,column]
-            if (value == "Unknown")
-                df[i, column] = get_value(names[i]) 
+            value = df[i,column]
+            if (!ismissing(value))
+                if (value == "Unknown")
+                    df[i, column] = get_value(names[i]) 
+                end
             end
         end
     end
@@ -22,12 +24,14 @@ function add_links(file::String)
     return nothing
 end
 
-path = "../export/"
+path = "export/"
 csvs = [
-    "Switzerland.csv"
+    "Poland.csv",
+    "Canada.csv"
 ]
 # global const files::Vector{String} = path*.*(readdir(path)[6:7])
 global const files::Vector{String} = path.*csvs 
+
 for file in files
     println(file)
     add_links(file)
