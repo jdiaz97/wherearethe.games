@@ -1,3 +1,9 @@
 include("scraper.jl")
+include("consoles.jl")
+include("contributions.jl")
 
-scrape_steam.(["Chile","Denmark","Sweden","Finland","Estonia","Austria","Hungary","Poland","Switzerland","Japan"])
+countries::Vector{String} = ["Chile","Denmark","Sweden","Finland","Estonia","Austria","Hungary","Poland","Switzerland","Canada"]
+
+scrape_steam.(countries)
+add_contributions()
+add_consoles(countries)

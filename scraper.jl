@@ -51,7 +51,7 @@ function get_game_info(url::String,country::String)
     description = html_elements(html, ".game_description_snippet")[1] |> html_text3
     description = replace(description, "\t" => "")
     if length(description) > 185
-        description = description[1:185]
+        description = description[1:185]*"..."
     end
     developer_names = "Unknown"
     publisher_names = "Unknown"

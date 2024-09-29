@@ -81,11 +81,12 @@ function add_links(file::String)
     return nothing
 end
 
-function check_links(countries::Vector{String})
+function add_consoles(countries::Vector{String})::Nothing
     files::Vector{String} = "export/".*countries.*".csv"
 
     for file in files
         println(file)
         add_links(file)
     end
+    return nothing
 end

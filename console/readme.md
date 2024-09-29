@@ -1,1 +1,0 @@
-Figuring out a way to get a link of the playstation store just with the name
