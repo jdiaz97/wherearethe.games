@@ -19,9 +19,6 @@ function clean_ifexists(df::DataFrame)::DataFrame
     for unique_country in unique_countries
         path = "export/"*unique_country*".csv"
         sliced_df = df[df[:,:country] .== unique_country,:]
-        exists = isdir(path)
-        println(path)
-        println(exists)
         if (isfile(path))
             available_df = CSV.read(path, DataFrame, stringtype=String; delim = ";;")
             list_urls = available_df[:,:Steam_Link]
