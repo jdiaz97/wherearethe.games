@@ -1,4 +1,16 @@
-using HTTP
+using HTTP, CSV, DataFrames
+include("scraper.jl")
+
+function create_empty_csv(path)
+    columns = [
+    "Name", "Country", "Description", "Thumbnail", "Publisher_Names",
+    "Developer_Names", "Platform", "Steam_Link", "Release_Date", "Genre",
+    "Epic_Link", "Playstation_Link", "Xbox_Link", "Switch_Link"
+    ]
+
+    df = DataFrame([[] for _ in columns], columns)
+    CSV.write(path, df, delim=";;")
+end
 
 ## Checks current .csvs and it will return a new DF without the urls that we already have.
 function clean_ifexists(df::DataFrame)::DataFrame
@@ -6,14 +18,22 @@ function clean_ifexists(df::DataFrame)::DataFrame
     return_df::DataFrame = DataFrame()
     for unique_country in unique_countries
         path = "export/"*unique_country*".csv"
-        available_df = CSV.read(path, DataFrame, stringtype=String; delim = ";;")
-        list_urls = available_df[:,:Steam_Link]
         sliced_df = df[df[:,:country] .== unique_country,:]
-        bit::BitVector = []
-        for i in (1:nrow(sliced_df))
-            push!(bit,sliced_df[i,:url] ∉ list_urls)
+        exists = isdir(path)
+        println(path)
+        println(exists)
+        if (isfile(path))
+            available_df = CSV.read(path, DataFrame, stringtype=String; delim = ";;")
+            list_urls = available_df[:,:Steam_Link]
+            bit::BitVector = []
+            for i in (1:nrow(sliced_df))
+                push!(bit,sliced_df[i,:url] ∉ list_urls)
+            end
+            return_df = vcat(return_df,sliced_df[bit,:])
+        else 
+            create_empty_csv(path)
+            return_df = vcat(return_df,sliced_df)
         end
-        return_df = vcat(return_df,sliced_df[bit,:])
     end
     return return_df
 end
