@@ -254,3 +254,9 @@ end
 function scrape_steam(c::String)
     df = scrape_mentor("data/"*c*".html",c); save_data(df,c)
 end
+
+function deploy()
+    run(`git add .`)
+    run(`git commit -m 'new'`)
+    run(`git push`)
+end
