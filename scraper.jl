@@ -1,6 +1,7 @@
 using TidierVest, Gumbo, Cascadia
 using DataFrames, CSV
 using ProgressBars
+using Base.Iterators
 
 struct GameInfo
     name::String
@@ -19,7 +20,13 @@ struct GameInfo
     switch_link::String
 end
 
-using Base.Iterators
+function broad_in(vec1::Vector,vec2::Vector)
+    bit::BitVector = []
+    for v in vec1
+        push!(bit,v in vec2)
+    end
+    return bit
+end
 
 function extract_platforms(input_string::AbstractString)
     # Define regular expression pattern to match platform names
