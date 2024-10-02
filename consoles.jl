@@ -85,7 +85,7 @@ function add_consoles(countries::Vector{String})::Nothing
     files::Vector{String} = "export/".*countries.*".csv"
 
     for file in files
-        println(file)
+        println("Fetching console links for: "*file)
         add_links(file)
     end
     return nothing

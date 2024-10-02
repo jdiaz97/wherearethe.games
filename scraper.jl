@@ -144,6 +144,7 @@ end
 
 function extract_data(df::DataFrame)::DataFrame
     data::Vector{GameInfo} = []
+    print("New entries are from: ")
     println(unique(df[:,:country]))
     for i in ProgressBar(1:nrow(df)) # urls
         try

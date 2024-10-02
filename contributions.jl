@@ -16,11 +16,15 @@ function create_empty_csv(path::String)
 end
 
 ## Checks current .csvs and it will return a new DF without the urls that we already have.
-function clean_ifexists(df::DataFrame)::DataFrame
+function clean_ifexists(df::DataFrame;in_failed::Bool=false)::DataFrame
     unique_countries::Vector{String} = unique(df[:,:country])
     return_df::DataFrame = DataFrame()
     for unique_country in unique_countries
-        path = "export/"*unique_country*".csv"
+        if in_failed
+            path = "export/failed.csv"
+        else
+            path = "export/"*unique_country*".csv"
+        end
         sliced_df::DataFrame = df[df[:,:country] .== unique_country,:]
         if (isfile(path))
             available_df = CSV.read(path, DataFrame, stringtype=String; delim = ";;")
@@ -49,6 +53,7 @@ function add_contributions()::Nothing
     df = unique(df,:url) # remove repetitions
     df = df[broad_in(df[:,:country],all_countries),:] # checks that it's a valid country
     df = clean_ifexists(df) # checks that we don't have it already in the database
+    df = clean_ifexists(df;in_failed=true) # checks that we don't have it already in the database
 
     if nrow(df) > 0
         df = extract_data(df)
