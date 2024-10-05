@@ -50,7 +50,7 @@ function add_contributions()::Nothing
     rename!(df, names(df)[3] => "url")
     
     df = unique(df,:url) # remove repetitions
-    df = vals(df)
+    df = vals(df) # ;)
     df = clean_ifexists(df) # checks that we don't have it already in the database
     df = clean_ifexists(df;in_failed=true) # checks that we don't have it already in the database
 
