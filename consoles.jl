@@ -4,7 +4,7 @@ const duck = pyimport("duckduckgo_search").DDGS
 using DataFrames, CSV, ProgressBars
 
 function search_console(name::String,base_url::String)::Dict
-    sleep(0.1)
+    sleep(3)
     success = false
     while !success
         try
@@ -12,8 +12,7 @@ function search_console(name::String,base_url::String)::Dict
             success = true
             return value
         catch e
-            println(e)
-            sleep(0.1)
+            sleep(2.5)
         end
     end
 end
