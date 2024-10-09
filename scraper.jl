@@ -171,6 +171,7 @@ function scrape_mentor(path::String,country::String)::DataFrame
     b = html_elements(a,".recommendation_link") ## all the recomendations of a mentor
     listgames::Vector{String} = html_attrs(b,"href")
     listgames = cleanlink.(listgames)
+    listgames = unique(listgames)
 
     df_data = DataFrame(url = listgames, country = country)
     return extract_data(df_data)
