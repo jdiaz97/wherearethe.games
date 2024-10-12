@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Map</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([20, 0], 2);
+
+        // Add a tile layer (OpenStreetMap as the source)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add GeoJSON data (world countries)
+        var geojsonLayer = L.geoJson(null, {
+            style: function (feature) {
+                return {
+                    color: "#007BFF", // Country borders
+                    weight: 2,
+                    fillColor: "#ADD8E6", // Fill countries with light blue
+                    fillOpacity: 0.6
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup('<b>' + feature.properties.name + '</b>');
+            }
+        }).addTo(map);
+
+        // Fetch the GeoJSON data for world countries
+        fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+            .then(response => response.json())
+            .then(data => geojsonLayer.addData(data));
+    </script>
+
+</body>
+</html>
