@@ -102,9 +102,9 @@
                 };
             },
             onEachFeature: function (feature, layer) {
-                var flag_url= 'https://kapowaz.github.io/square-flags/flags/'+feature.properites.flag + ".svg"
+                var flag_url= 'https://flagicons.lipis.dev/flags/4x3/'+feature.properties.flag + ".svg"
                 
-                var popupContent = '<b>' + feature.properties.name + '<img src=" '+ flag_url+ '" width="48"> </b> <br>' +
+                var popupContent = '<b>' + feature.properties.name + ' <img src=" '+ flag_url+ '" width="30"> </b> <br>' +
                     '<a href="' + "el ñeñe" + '" target="_blank" class="popup-button">See Games</a>';
 
                 layer.bindPopup(popupContent);
