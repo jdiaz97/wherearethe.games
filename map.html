@@ -103,9 +103,11 @@
             },
             onEachFeature: function (feature, layer) {
                 var flag_url= 'https://flagicons.lipis.dev/flags/4x3/'+feature.properties.flag + ".svg"
+                var flag_img = ' <img src=" '+ flag_url+ '" width="30">'
+                var redirect = "/countries/"+feature.properties.name.replace(" ", "_")
                 
-                var popupContent = '<b>' + feature.properties.name + ' <img src=" '+ flag_url+ '" width="30"> </b> <br>' +
-                    '<a href="' + "el ñeñe" + '" target="_blank" class="popup-button">See Games</a>';
+                var popupContent = '<b>' + feature.properties.name + flag_img +' </b> <br>' +
+                    '<a href="' + redirect + '" target="_blank" class="popup-button">See Games</a>';
 
                 layer.bindPopup(popupContent);
             }
