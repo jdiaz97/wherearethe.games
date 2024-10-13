@@ -40,7 +40,7 @@
         }
 
         .leaflet-popup-content {
-            font-family: 'Comic Sans MS', cursive;
+            font-family: Arial, sans-serif; /* Use a font that supports emoji */
             color: #FF69B4;
             /* Hot pink text */
         }
@@ -102,9 +102,11 @@
                 };
             },
             onEachFeature: function (feature, layer) {
-                var popupContent = '<b>' + feature.properties.name + ' ' + feature.properties.flag + '</b><br>' +
+                var flag_url= 'https://kapowaz.github.io/square-flags/flags/'+feature.properites.flag + ".svg"
+                
+                var popupContent = '<b>' + feature.properties.name + '<img src=" '+ flag_url+ '" width="48"> </b> <br>' +
                     '<a href="' + "el ñeñe" + '" target="_blank" class="popup-button">See Games</a>';
-                    
+
                 layer.bindPopup(popupContent);
             }
         }).addTo(map);
@@ -112,7 +114,12 @@
         // Fetch the GeoJSON data for world countries
         fetch('https://raw.githubusercontent.com/jdiaz97/wherearethe.games/main/assets/countries.geo.json')
             .then(response => response.json())
-            .then(data => geojsonLayer.addData(data));
+            .then(data => {
+                geojsonLayer.addData(data);
+            })
+            .catch(error => {
+                console.error('Error fetching the GeoJSON data:', error); // Log any errors that occur
+            });
 
         // Add cute custom zoom control
         L.Control.CuteZoom = L.Control.Zoom.extend({

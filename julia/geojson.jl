@@ -12,8 +12,10 @@ for f in data["features"]
     push!(bit, isit)
 end
 
+data["features"] = data["features"][bit]
+
 # mutate
-for i in 1:length(data)
+for i in 1:length(data["features"])
     data["features"][i]["properties"]["flag"] = country_flags[data["features"][i]["properties"]["name"]]
 end
 
