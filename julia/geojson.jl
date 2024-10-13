@@ -12,6 +12,9 @@ for f in data["features"]
     push!(bit, isit)
 end
 
-data["features"] = data["features"][bit]
+# mutate
+for i in 1:length(data)
+    data["features"][i]["properties"]["flag"] = country_flags[data["features"][i]["properties"]["name"]]
+end
 
 JSON3.write(final_path,data)

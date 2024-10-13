@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,32 +15,42 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: calc(100vh - 60px); /* Adjust based on your navbar height */
+            height: calc(100vh - 60px);
+            /* Adjust based on your navbar height */
             padding: 20px;
         }
+
         #map {
             height: 80vh;
             width: 80%;
             border-radius: 20px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            border: 10px solid #FFB6C1; /* Light pink border */
+            border: 10px solid #FFB6C1;
+            /* Light pink border */
         }
+
         .leaflet-popup-content-wrapper {
-            background-color: #FFF0F5; /* Lavender blush */
+            background-color: #FFF0F5;
+            /* Lavender blush */
             border-radius: 15px;
         }
+
         .leaflet-popup-tip {
             background-color: #FFF0F5;
         }
+
         .leaflet-popup-content {
             font-family: 'Comic Sans MS', cursive;
-            color: #FF69B4; /* Hot pink text */
+            color: #FF69B4;
+            /* Hot pink text */
         }
+
         .leaflet-tile-pane {
             filter: hue-rotate(45deg) saturate(1.5) brightness(1.1);
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-container">
@@ -91,7 +102,10 @@
                 };
             },
             onEachFeature: function (feature, layer) {
-                layer.bindPopup('<b>' + feature.properties.name + '</b>');
+                var popupContent = '<b>' + feature.properties.name + ' ' + feature.properties.flag + '</b><br>' +
+                    '<a href="' + "el ñeñe" + '" target="_blank" class="popup-button">See Games</a>';
+                    
+                layer.bindPopup(popupContent);
             }
         }).addTo(map);
 
@@ -113,4 +127,5 @@
         new L.Control.CuteZoom().addTo(map);
     </script>
 </body>
+
 </html>
