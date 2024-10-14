@@ -9,7 +9,7 @@ let countryNameFlag = "https://flagicons.lipis.dev/flags/4x3/"+country_code+".sv
 
 let allGames = [];  // Global variable to store all games
 // Global variables to store filters
-let bitVector_countries = [];
+// let bitVector_countries = [];
 let bitVector_years = [];
 let bitVector_genres = []
 let bitVector_platforms = []
@@ -86,21 +86,21 @@ async function fetchCSVData(url) {
     }
 }
 
-function createCountryFilterButtons() {
-    const filterContainer = document.getElementById('filterButtons-country');
-    filterContainer.innerHTML = '<select id="countryFilter" onchange="filter_by_country(this.value)">' +
-        '<option value="all">All Countries</option>';
+// function createCountryFilterButtons() {
+//     const filterContainer = document.getElementById('filterButtons-country');
+//     filterContainer.innerHTML = '<select id="countryFilter" onchange="filter_by_country(this.value)">' +
+//         '<option value="all">All Countries</option>';
 
-    // Assuming uniqueCountries (global variable) is already defined and populated
-    uniqueCountries.forEach(country => {
-        filterContainer.querySelector('select').innerHTML += `<option value="${country}">${country}</option>`;
-    });
+//     // Assuming uniqueCountries (global variable) is already defined and populated
+//     uniqueCountries.forEach(country => {
+//         filterContainer.querySelector('select').innerHTML += `<option value="${country}">${country}</option>`;
+//     });
 
-    // Add change event listener to highlight the selected option
-    filterContainer.querySelector('select').addEventListener('change', function (e) {
-        this.classList.add('active');
-    });
-}
+//     // Add change event listener to highlight the selected option
+//     filterContainer.querySelector('select').addEventListener('change', function (e) {
+//         this.classList.add('active');
+//     });
+// }
 
 function createGenreFilterButtons() {
     const filterContainer = document.getElementById('filterButtons-genre');
@@ -211,7 +211,6 @@ function createGameCard(game) {
     return `<div class="game-card">
     <div class="game-header">${game.Name}</div><img src="${game.Thumbnail}" alt="${game.Name} Thumbnail" class="game-thumbnail" loading="lazy">
     <div class="game-info">
-        <div class="info-item"><span class="info-label">Country</span>${game.Country}</div>
         <div class="info-item"><span class="info-label">Genre</span><span class="genre">${game.Genre}</span></div>
         <div class="info-item">
     <span class="info-label">Description</span>
@@ -279,7 +278,7 @@ function filter_and_render(bitVector) {
 }
 
 function vector_state() {
-    return bitvectorAND(bitVector_countries, bitVector_years, bitVector_genres, bitVector_platforms)
+    return bitvectorAND(bitVector_years, bitVector_genres, bitVector_platforms)
 }
 
 
@@ -289,25 +288,26 @@ function refresh() {
 }
 
 // Function to filter games based on selected country
-function filter_by_country(country) {
-    if (country === 'all') {
-        bitVector_countries.fill(1)
-    } else {
-        bitVector_countries = allGames.map(game =>
-            game.Country == country ? 1 : 0
-        );
-    }
-    refresh();
-    // Highlight the appropriate button
-    const filterContainer = document.getElementById('filterButtons');
-    filterContainer.querySelectorAll('button').forEach(btn => {
-        btn.classList.remove('active');
-        if ((country === 'all' && btn.textContent === 'All Countries') ||
-            btn.textContent === country) {
-            btn.classList.add('active');
-        }
-    });
-}
+// function filter_by_country(country) {
+//     if (country === 'all') {
+//         bitVector_countries.fill(1)
+//     } else {
+//         bitVector_countries = allGames.map(game =>
+//             game.Country == country ? 1 : 0
+//         );
+//     }
+//     refresh();
+//     // Highlight the appropriate button
+//     const filterContainer = document.getElementById('filterButtons');
+//     filterContainer.querySelectorAll('button').forEach(btn => {
+//         btn.classList.remove('active');
+//         if ((country === 'all' && btn.textContent === 'All Countries') ||
+//             btn.textContent === country) {
+//             btn.classList.add('active');
+//         }
+//     });
+// }
+
 
 // Function to filter games based on selected year
 function filter_by_year(year) {
@@ -343,7 +343,7 @@ async function main() {
 
     try {
         allGames = await fetchMultipleCSVData(csvUrls);
-        bitVector_countries = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
+        // bitVector_countries = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
         bitVector_years = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
         bitVector_genres = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
         bitVector_platforms = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
@@ -353,7 +353,7 @@ async function main() {
         console.error('Error fetching or processing data:', error);
     }
 
-    createCountryFilterButtons();
+    // createCountryFilterButtons();
     createGenreFilterButtons();
     createYearFilterButtons();
     createPlatformFilterButtons();

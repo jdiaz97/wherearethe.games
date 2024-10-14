@@ -7,7 +7,7 @@ function minify_html(html::String)
 
     return minified_html
 end
-
+include("geojson.jl")
 add_(str) = replace(str, " " => "_")
 
 file = "data/template.html"

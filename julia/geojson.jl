@@ -1,5 +1,6 @@
 using JSON3
 include("../.env")
+countries = collect(keys(country_flags))
 
 final_path= "assets/countries.geo.json"
 path = "assets/countries-base.geo.json"
