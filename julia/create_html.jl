@@ -8,6 +8,8 @@ function minify_html(html::String)
     return minified_html
 end
 
+add_(str) = replace(str, " " => "_")
+
 file = "data/template.html"
 include("../.env")
 
@@ -19,7 +21,7 @@ for i in eachindex(countries)
     data = replace(data, "COUNTRY_PLACEHOLDER" => countries[i])
     data = replace(data, "COUNTRY_CODE_PLACEHOLDER" => flags[i])
 
-    path = "countries/"*countries[i]*".html"
+    path = "countries/"*add_(countries[i])*".html"
     data = minify_html(data)
 
     open(path, "w") do file
