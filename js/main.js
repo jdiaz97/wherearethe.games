@@ -226,23 +226,23 @@ function createGameCard(game) {
         <div class="info-item"><span class="info-label">Platform</span>${game.Platform}</div>
         <div class="info-item"><span class="info-label">Release Date</span>${game.Release_Date instanceof Date && !isNaN(game.Release_Date) ? game.Release_Date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "To be announced"}</div>
         <a href="${game.Steam_Link}" class="platform-link steam-link" target="_blank">
-  <img src="assets/steam.webp" alt="Steam" class="platform-logo">
+  <img src="../assets/steam.webp" alt="Steam" class="platform-logo">
 </a>
 ${game.Epic_Link && game.Epic_Link !== "Unknown" ? `
 <a href="${game.Epic_Link}" class="platform-link epic-link" target="_blank">
-  <img src="assets/epic.webp" alt="Epic Games" class="platform-logo">
+  <img src="../assets/epic.webp" alt="Epic Games" class="platform-logo">
 </a>` : ''}
 ${game.Playstation_Link && game.Playstation_Link !== "Unknown" ? `
 <a href="${game.Playstation_Link}" class="platform-link playstation-link" target="_blank">
-  <img src="assets/playstation.webp" alt="PlayStation" class="platform-logo">
+  <img src="../assets/playstation.webp" alt="PlayStation" class="platform-logo">
 </a>` : ''}
 ${game.Xbox_Link && game.Xbox_Link !== "Unknown" ? `
 <a href="${game.Xbox_Link}" class="platform-link xbox-link" target="_blank">
-  <img src="assets/xbox.webp" alt="Xbox" class="platform-logo">
+  <img src="../assets/xbox.webp" alt="Xbox" class="platform-logo">
 </a>` : ''}
 ${game.Switch_Link && game.Switch_Link !== "Unknown" ? `
 <a href="${game.Switch_Link}" class="platform-link nintendo-link" target="_blank">
-  <img src="assets/nintendo.webp" alt="Nintendo" class="platform-logo">
+  <img src="../assets/nintendo.webp" alt="Nintendo" class="platform-logo">
 </a>` : ''}
         </div>
         
