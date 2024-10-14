@@ -396,3 +396,18 @@ h1 {
     display: flex;
     align-items: center;
 }
+
+
+.simple-title {
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+    font-size: 1.8em;
+    margin: 20px 0;
+}
+
+.country-flag {
+    width: 30px;
+    height: auto;
+    margin-left: 10px;
+}

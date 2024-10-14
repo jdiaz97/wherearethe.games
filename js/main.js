@@ -1,5 +1,12 @@
 // This is manages the list of games, filters and more.    
 
+// uniqueCountries has to be previously defined
+let countryNameFlag = "https://flagicons.lipis.dev/flags/4x3/"+country_code+".svg";
+        document.getElementById('countryName').textContent = country_data;
+        document.getElementById('countryFlag').src = countryNameFlag;
+        document.getElementById('countryFlag').alt = country_data + " flag";
+
+
 let allGames = [];  // Global variable to store all games
 // Global variables to store filters
 let bitVector_countries = [];
@@ -7,8 +14,7 @@ let bitVector_years = [];
 let bitVector_genres = []
 let bitVector_platforms = []
 
-let uniqueCountries = new Set(["Chile", "Austria", "Canada", "Colombia", "Denmark", "Estonia", "Finland", "Hungary", "Poland", "Sweden", "Iceland", "Switzerland", "Portugal", "Lithuania", "India", "New Zealand", "Romania", "Moldova", "Norway", "Greece"]);
-
+let uniqueCountries = new Set([country_data]);
 // ascending and descending
 document.getElementById('sort-toggle').addEventListener('click', function () {
     const sortButton = document.getElementById('sort-toggle');

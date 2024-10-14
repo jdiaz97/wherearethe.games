@@ -2,41 +2,53 @@
 <html lang="en">
 
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N6YY39T8TQ"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'G-N6YY39T8TQ');
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Where are the games?</title>
-
-    <link href="assets/favicon.png" rel="icon">
-    <link href="assets/favicon.png" rel="apple-touch-icon">
-
-    <!-- Meta Description (Crucial for Search Engine Results) -->
-    <meta name="description"
-        content="Find video games tailored to your preferences by filtering through country, culture, and more. Discover games you'll love on Where Are The Games.">
-
-    <!-- Meta Keywords (Less relevant but can still help) -->
-    <meta name="keywords"
-        content="video games, game discovery, cultural games, games by country, find games, personalized game recommendations">
-
-    <!-- Author -->
-    <meta name="author" content="Where Are The Games">
-    <meta property="og:title" content="Discover Video Games by Country and Culture - Where Are The Games">
-    <meta property="og:description"
-        content="Explore and find video games that match your culture and country preferences.">
-    <meta property="og:url" content="https://wherearethe.games">
-    <meta name="robots" content="index, follow">
-    <meta name="googlebot" content="index, follow">
-    <link rel="canonical" href="https://wherearethe.games">
+    <title>Cute World Map</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <link href="css/main.css" rel="stylesheet">
+    <style>
+        .map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 60px);
+            /* Adjust based on your navbar height */
+            padding: 20px;
+        }
+
+        #map {
+            height: 80vh;
+            width: 80%;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border: 10px solid #FFB6C1;
+            /* Light pink border */
+        }
+
+        .leaflet-popup-content-wrapper {
+            background-color: #FFF0F5;
+            /* Lavender blush */
+            border-radius: 15px;
+        }
+
+        .leaflet-popup-tip {
+            background-color: #FFF0F5;
+        }
+
+        .leaflet-popup-content {
+            font-family: Arial, sans-serif; /* Use a font that supports emoji */
+            color: #FF69B4;
+            /* Hot pink text */
+        }
+
+        .leaflet-tile-pane {
+            filter: hue-rotate(45deg) saturate(1.5) brightness(1.1);
+        }
+    </style>
 </head>
 
 <body>
@@ -54,44 +66,75 @@
             <div class="nav-links">
                 <a href="/contribute">Add data</a>
                 <a href="/contact">Contact</a>
-                <!-- <a href="https://www.instagram.com/wherearethe.games/" aria-label="Instagram">
-                    <img src="https://cdn-icons-png.flaticon.com/256/2111/2111463.png" alt="Instagram"
-                        style="width: 25px; height: 25px;">
-                </a> -->
             </div>
         </div>
     </nav>
-    <div class="center-container">
-        <div class="filter-row">
-            <div id="filterButtons-country"></div>
-            <div id="filterButtons-year"></div>
-            <div id="filterButtons-genre"></div>
-            <div id="filterButtons-platforms"></div>
 
-            <!-- Order By Section -->
-            <div id="filterButtons-orderby" class="order-section">
-                <label for="order-by">Order by: </label>
-                <select id="order-by">
-                    <option value="alphabetical">Alphabetical</option>
-                    <!-- <option value="date">Date</option> -->
-                </select>
-                <button id="sort-toggle" class="sort-button" data-order="ascending">
-                    <span id="sort-text">Ascending</span>
-                    <span id="arrow">↑</span>
-                </button>
-            </div>
-
-
-        </div>
-
-
-        <div id="gameCountDisplay"></div>
+    <div class="map-container">
+        <div id="map"></div>
     </div>
-    <div class="container" id="gameContainer"></div>
 
-    <script src="js/nav.js"></script>
-    <script src="js/main.js"></script>
-    
+    <script>
+        // Initialize the map
+        var map = L.map('map', {
+            maxBounds: [
+                [-90, -180], // Southwest coordinates (latitude, longitude)
+                [90, 180]    // Northeast coordinates
+            ],
+            maxBoundsViscosity: 1.0, // Prevent the map from bouncing when reaching the bounds
+            zoomControl: false // Hide default zoom control
+        }).setView([20, 0], 2);
+
+        // Add a standard tile layer with CSS filter for a cute effect
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add GeoJSON data (world countries)
+        var geojsonLayer = L.geoJson(null, {
+            style: function (feature) {
+                return {
+                    color: "#FF69B4", // Hot pink borders
+                    weight: 2,
+                    fillColor: "#FFC0CB", // Pink fill
+                    fillOpacity: 0.4
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                var flag_url= 'https://flagicons.lipis.dev/flags/4x3/'+feature.properties.flag + ".svg"
+                var flag_img = ' <img src=" '+ flag_url+ '" width="30">'
+                var redirect = "/countries/"+feature.properties.name.replace(" ", "_")
+                
+                var popupContent = '<b>' + feature.properties.name + flag_img +' </b> <br>' +
+                    '<a href="' + redirect + '" target="_blank" class="popup-button">See Games</a>';
+
+                layer.bindPopup(popupContent);
+            }
+        }).addTo(map);
+
+        // Fetch the GeoJSON data for world countries
+        fetch('https://raw.githubusercontent.com/jdiaz97/wherearethe.games/main/assets/countries.geo.json')
+            .then(response => response.json())
+            .then(data => {
+                geojsonLayer.addData(data);
+            })
+            .catch(error => {
+                console.error('Error fetching the GeoJSON data:', error); // Log any errors that occur
+            });
+
+        // Add cute custom zoom control
+        L.Control.CuteZoom = L.Control.Zoom.extend({
+            options: {
+                position: 'bottomright',
+                zoomInText: '🔍+',
+                zoomOutText: '🔍-',
+                zoomInTitle: 'Zoom in',
+                zoomOutTitle: 'Zoom out'
+            }
+        });
+        new L.Control.CuteZoom().addTo(map);
+    </script>
 </body>
 
 </html>
