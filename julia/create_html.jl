@@ -1,3 +1,13 @@
+function minify_html(html::String)
+    # Replace multiple spaces, newlines, and tabs with a single space
+    minified_html = replace(html, r"\s+" => " ")
+
+    # Remove spaces between tags
+    minified_html = replace(minified_html, r">\s+<" => "><")
+
+    return minified_html
+end
+
 file = "data/template.html"
 include("../.env")
 
@@ -8,9 +18,12 @@ for i in eachindex(countries)
     data = read(file,String)
     data = replace(data, "COUNTRY_PLACEHOLDER" => countries[i])
     data = replace(data, "COUNTRY_CODE_PLACEHOLDER" => flags[i])
+
     path = "countries/"*countries[i]*".html"
+    data = minify_html(data)
 
     open(path, "w") do file
         write(file, data)
     end 
 end
+
