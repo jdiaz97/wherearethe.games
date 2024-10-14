@@ -370,7 +370,7 @@ let currentSortOrder = 'ascending';
 function reorder_by_indices(indices) {
     // Use the sorted indices to reorder allGames and bitvectors
     allGames = indices.map(i => allGames[i]);
-    bitVector_countries = indices.map(i => bitVector_countries[i]);
+    // bitVector_countries = indices.map(i => bitVector_countries[i]);
     bitVector_years = indices.map(i => bitVector_years[i]);
     bitVector_genres = indices.map(i => bitVector_genres[i]);
     bitVector_platforms = indices.map(i => bitVector_platforms[i]);
