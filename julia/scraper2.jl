@@ -45,11 +45,19 @@ def scroll_and_get_html(url):
 scroll_and_get_html(str) = py"scroll_and_get_html"(str)
 chopchop(data) = split(data,"?curator")[1]
 
+function check_slash(str)
+    if last(str) == '/'
+        return str 
+    else 
+        str*"/"
+    end
+end
+
 ## list
 function create_df1(url::String,country::String)::DataFrame
     html = scroll_and_get_html(url) |> parsehtml
     d = html_elements(html,[".MY9Lke1NKqCw4L796pl4u",".Focusable","a"])
-    data::Vector{String} = html_attrs(d,"href") |> unique .|> chopchop
+    data::Vector{String} = html_attrs(d,"href") |> unique .|> chopchop .|> check_slash
     return DataFrame(country = country, url = data)
 end
 
@@ -57,7 +65,7 @@ end
 function create_df2(url::String,country::String)::DataFrame
     html = scroll_and_get_html(url) |> parsehtml
     b = html_elements(html,".recommendation_link") ## all the recomendations of a mentor
-    listgames::Vector{String} = html_attrs(b,"href") .|> cleanlink |> unique
+    listgames::Vector{String} = html_attrs(b,"href") .|> cleanlink |> unique .|> check_slash
     return DataFrame(url = listgames, country = country)
 end
 
@@ -92,3 +100,4 @@ end
 
 # df = create_df("https://store.steampowered.com/curator/9862263-Games-From-Norway/#browse","Norway")
 # process_df(df)
+
