@@ -211,6 +211,7 @@ function createGameCard(game) {
     return `<div class="game-card">
     <div class="game-header">${game.Name}</div><img src="${game.Thumbnail}" alt="${game.Name} Thumbnail" class="game-thumbnail" loading="lazy">
     <div class="game-info">
+        <div class="info-item"><span class="info-label">Country</span>${game.Country}</div>
         <div class="info-item"><span class="info-label">Genre</span><span class="genre">${game.Genre}</span></div>
         <div class="info-item">
     <span class="info-label">Description</span>
