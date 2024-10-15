@@ -6,6 +6,13 @@ final_path= "assets/countries.geo.json"
 path = "assets/countries-base.geo.json"
 
 data = JSON3.read(path,Dict)
+data = JSON3.read(final_path,Dict)
+
+for f in data["features"]
+    println(f["properties"]["name"]) 
+    
+end
+
 
 bit::BitVector = BitVector()  # You should initialize it properly
 for f in data["features"]
