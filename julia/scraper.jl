@@ -141,7 +141,11 @@ function gameinfo_df(a::GameInfo)::DataFrame
     )
     return df
 end
-
+"""
+The most important function
+Given a dataframe with 2 columns, :country and :url we will scrape the info from steam. 
+Will return a dataframe with the added columns
+"""
 function extract_data(df::DataFrame)::DataFrame
     data::Vector{GameInfo} = []
     print("New entries are from: ")
@@ -230,15 +234,16 @@ function save_data(df::DataFrame,country::String)
     end
 
     bits ::BitVector= df[:,"Name"] .== "failed"
+
     failed::DataFrame= df[bits,:]
     goods::DataFrame = df[.!bits,:]
 
     failed = select(failed, :Country, :Steam_Link)
 
     country_path = "export/"*country*".csv"
-    export_path = "export/failed.csv"
+    failed_path = "export/failed.csv"
     write_db(country_path,goods)
-    write_db(export_path,failed)
+    write_db(failed_path,failed)
 
     return nothing
 end
@@ -268,4 +273,43 @@ function deploy()
     run(`git add .`)
     run(`git commit -m 'new'`)
     run(`git push`)
+end
+
+## Checks current .csvs and it will return a new DF without the urls that we already have.
+function clean_ifexists(df::DataFrame;in_failed::Bool=false)::DataFrame
+    unique_countries::Vector{String} = unique(df[:,:country])
+    return_df::DataFrame = DataFrame()
+    for unique_country in unique_countries
+        if in_failed
+            path = "export/failed.csv"
+        else
+            path = "export/"*unique_country*".csv"
+        end
+        sliced_df::DataFrame = df[df[:,:country] .== unique_country,:]
+        if (isfile(path))
+            available_df = CSV.read(path, DataFrame, stringtype=String; delim = ";;")
+            list_urls::Vector{String} = available_df[:,:Steam_Link]
+            bit::BitVector = []
+            for i in (1:nrow(sliced_df))
+                push!(bit,sliced_df[i,:url] ∉ list_urls)
+            end
+            return_df = vcat(return_df,sliced_df[bit,:])
+        else 
+            create_empty_csv(path)
+            return_df = vcat(return_df,sliced_df)
+        end
+    end
+    return return_df
+end
+
+function create_empty_csv(path::String)
+    columns = [
+    "Name", "Country", "Description", "Thumbnail", "Publisher_Names",
+    "Developer_Names", "Platform", "Steam_Link", "Release_Date", "Genre",
+    "Epic_Link", "Playstation_Link", "Xbox_Link", "Switch_Link"
+    ]
+
+    df = DataFrame([[] for _ in columns], columns)
+    CSV.write(path, df, delim=";;")
+    return nothing
 end
