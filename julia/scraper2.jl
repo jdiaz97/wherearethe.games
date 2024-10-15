@@ -2,7 +2,7 @@ using PyCall
 using TidierVest, Gumbo, DataFrames
 include("scraper.jl")
 
-py"""
+PyCall.py"""
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -74,9 +74,7 @@ end
 function process_df(dataframe::DataFrame)
     dataframe = unique(dataframe,:url) # remove repetitions
     dataframe = clean_ifexists(dataframe) # checks that we don't have it already in the database
-    println(dataframe)
     dataframe = clean_ifexists(dataframe;in_failed=true) # checks that we don't have it already in the database
-    println(dataframe)
     
     if nrow(dataframe) > 0
         dataframe = extract_data(dataframe)

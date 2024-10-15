@@ -1,6 +1,6 @@
 ENV["JULIA_CONDAPKG_BACKEND"] = "Null"
 using PythonCall
-const duck = pyimport("duckduckgo_search").DDGS
+const duck = PythonCall.pyimport("duckduckgo_search").DDGS
 using DataFrames, CSV, ProgressBars
 
 function search_console(name::String,base_url::String)::Dict
