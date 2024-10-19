@@ -152,12 +152,37 @@ body {
 .filter-row {
     display: flex;
     justify-content: space-between;
-    /* Adjusts spacing between elements */
     align-items: center;
-    /* Vertically centers the divs */
     gap: 10px;
-    /* Adds some spacing between the divs */
+    background-color: #ff69b4;
+    border-radius: 15px;
+    padding: 10px; 
 }
+.filter-row select {
+    padding: 5px; /* Same padding as filter buttons */
+    margin-left: 5px; /* Space between label and dropdown */
+    border-radius: 5px; /* Round borders */
+    border: 1px solid #ff99cc; /* Light pink border */
+    background-color: #ffb3d9; /* Light pink background */
+    color: #000000; /* Text color */
+    font-size: 14px; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.2s; /* Smooth transition for background color */
+}
+
+.filter-row select:hover {
+    background-color: #ff99cc; /* Slightly darker pink on hover */
+}
+.filter-row select:focus {
+    outline: none; /* Remove default outline */
+    border-color: #ff99cc; /* Darker pink border on focus */
+    box-shadow: 0 0 5px rgba(255, 102, 153, 0.5); /* Optional: Add a glow effect */
+}
+.filter-row select option {
+    background-color: #ffb3d9; /* This might not apply in all browsers */
+    color: #333;
+}
+
 
 #gameCountDisplay {
     padding: 10px;
@@ -344,21 +369,6 @@ h1 {
         top: 1rem;
         right: 1rem;
     }
-}
-
-#order-by {
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.sort-button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
 }
 
 .arrow {
