@@ -21,17 +21,16 @@ body {
     conic-gradient(from -45deg at 50% 41%,var(--c1) 90deg,var(--c2) 0) 
     calc(var(--s)/2) 0;
     background-size: var(--s) var(--s);
-    
-    
-
 }
 
 .container {
     max-width: 1200px;
+    min-width: 350px;
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
+    justify-content: center
 }
 
 .game-card {
@@ -42,6 +41,9 @@ body {
     transition: transform 0.3s ease;
     border: 2px solid #c14489;
     height: 720px;
+    max-width: 400px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .game-card:hover {
