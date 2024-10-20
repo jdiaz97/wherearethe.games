@@ -209,43 +209,68 @@ function filter_by_platform(platform) {
 // Function to create a game card HTML
 function createGameCard(game) {
     return `<div class="game-card">
-    <div class="game-header">${game.Name}</div><img src="${game.Thumbnail}" alt="${game.Name} Thumbnail" class="game-thumbnail" loading="lazy">
+    <div class="game-header" title="${game.Name}">${game.Name}</div>
+    <img src="${game.Thumbnail}" alt="${game.Name} Thumbnail" class="game-thumbnail" loading="lazy">
     <div class="game-info">
-        <div class="info-item"><span class="info-label">Country</span>${game.Country}</div>
-        <div class="info-item"><span class="info-label">Genre</span><span class="genre">${game.Genre}</span></div>
         <div class="info-item">
-    <span class="info-label">Description</span>
-    <div class="description">
-        <span class="game-description">${game.Description}</span>
-        <span class="read-more" id="readMoreBtn">Read More</span>
-    </div>
-    <div id="message" style="display: none; color: red;">Not available yet</div>
-</div>
-        <div class="info-item"><span class="info-label">Publisher</span>${game.Publisher_Names}</div>
-        <div class="info-item"><span class="info-label">Developer</span>${game.Developer_Names}</div>
-        <div class="info-item"><span class="info-label">Platform</span>${game.Platform}</div>
-        <div class="info-item"><span class="info-label">Release Date</span>${game.Release_Date instanceof Date && !isNaN(game.Release_Date) ? game.Release_Date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "To be announced"}</div>
-        <a href="${game.Steam_Link}" class="platform-link steam-link" target="_blank">
-  <img src="../assets/steam.webp" alt="Steam" class="platform-logo">
-</a>
-${game.Epic_Link && game.Epic_Link !== "Unknown" ? `
-<a href="${game.Epic_Link}" class="platform-link epic-link" target="_blank">
-  <img src="../assets/epic.webp" alt="Epic Games" class="platform-logo">
-</a>` : ''}
-${game.Playstation_Link && game.Playstation_Link !== "Unknown" ? `
-<a href="${game.Playstation_Link}" class="platform-link playstation-link" target="_blank">
-  <img src="../assets/playstation.webp" alt="PlayStation" class="platform-logo">
-</a>` : ''}
-${game.Xbox_Link && game.Xbox_Link !== "Unknown" ? `
-<a href="${game.Xbox_Link}" class="platform-link xbox-link" target="_blank">
-  <img src="../assets/xbox.webp" alt="Xbox" class="platform-logo">
-</a>` : ''}
-${game.Switch_Link && game.Switch_Link !== "Unknown" ? `
-<a href="${game.Switch_Link}" class="platform-link nintendo-link" target="_blank">
-  <img src="../assets/nintendo.webp" alt="Nintendo" class="platform-logo">
-</a>` : ''}
+            <span class="info-label">Genre</span>
+            <span class="genre" title="${game.Genre}">${game.Genre}</span>
+        </div>
+        <div class="info-container">
+            <div class="info-itemdevpub">
+                <span class="info-labeldevpub">Developer</span>
+                ${game.Developer_Names}
+            </div>
+            <div class="info-itemdevpub">
+                <span class="info-labeldevpub" title="${game.Publisher_Names}">Publisher</span>
+                ${game.Publisher_Names}
+            </div>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Description</span>
+            <div class="description">
+                <span class="game-description">${game.Description}</span>
+                <span class="read-more" id="readMoreBtn">Read More</span>
+            </div>
+            <div id="message" style="display: none; color: red;">Not available yet</div>
+        </div>  
+        
+        <div class="info-container2">
+            <div class="info-platform">
+                <span class="info-labelplatform" title="${game.Platform}">Platforms</span>
+                ${game.Platform}
+            </div>
+            <div class="info-item">
+                <span class="info-labelplatform">Where to Buy</span>
+                <div class="platform-icons">
+                    <a href="${game.Steam_Link}" class="platform-link steam-link" target="_blank">
+                        <img src="../assets/steam.webp" alt="Steam" class="platform-logo">
+                    </a>
+                    ${game.Epic_Link && game.Epic_Link !== "Unknown" ? `
+                    <a href="${game.Epic_Link}" class="platform-link epic-link" target="_blank">
+                        <img src="../assets/epic.webp" alt="Epic Games" class="platform-logo">
+                    </a>` : ''}
+                    ${game.Playstation_Link && game.Playstation_Link !== "Unknown" ? `
+                    <a href="${game.Playstation_Link}" class="platform-link playstation-link" target="_blank">
+                        <img src="../assets/playstation.webp" alt="PlayStation" class="platform-logo">
+                    </a>` : ''}
+                    ${game.Xbox_Link && game.Xbox_Link !== "Unknown" ? `
+                    <a href="${game.Xbox_Link}" class="platform-link xbox-link" target="_blank">
+                        <img src="../assets/xbox.webp" alt="Xbox" class="platform-logo">
+                    </a>` : ''}
+                    ${game.Switch_Link && game.Switch_Link !== "Unknown" ? `
+                    <a href="${game.Switch_Link}" class="platform-link nintendo-link" target="_blank">
+                        <img src="../assets/nintendo.webp" alt="Nintendo" class="platform-logo">
+                    </a>` : ''}
+                </div>
+            </div>
         </div>
         
+        <div class="info-item">
+            <span class="info-label">Release Date</span>
+            ${game.Release_Date instanceof Date && !isNaN(game.Release_Date) ? game.Release_Date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "To be announced"}
+        </div>
+    </div>
 </div>`;
 }
 
