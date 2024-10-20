@@ -215,6 +215,7 @@ body {
     padding: 10px; 
 }
 .filter-row select {
+<<<<<<< HEAD
     padding: 5px;
     margin-left: 5px;
     border-radius: 5px;
@@ -236,6 +237,29 @@ body {
 }
 .filter-row select option {
     background-color: #ffb3d9; 
+=======
+    padding: 5px; /* Same padding as filter buttons */
+    margin-left: 5px; /* Space between label and dropdown */
+    border-radius: 5px; /* Round borders */
+    border: 1px solid #ff99cc; /* Light pink border */
+    background-color: #ffb3d9; /* Light pink background */
+    color: #000000; /* Text color */
+    font-size: 14px; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.2s; /* Smooth transition for background color */
+}
+
+.filter-row select:hover {
+    background-color: #ff99cc; /* Slightly darker pink on hover */
+}
+.filter-row select:focus {
+    outline: none; /* Remove default outline */
+    border-color: #ff99cc; /* Darker pink border on focus */
+    box-shadow: 0 0 5px rgba(255, 102, 153, 0.5); /* Optional: Add a glow effect */
+}
+.filter-row select option {
+    background-color: #ffb3d9; /* This might not apply in all browsers */
+>>>>>>> d271449025aac2ff16cf6b529ccedee61e99ce9c
     color: #333;
 }
 
