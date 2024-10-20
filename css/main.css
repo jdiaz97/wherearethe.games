@@ -11,13 +11,20 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     margin: 0;
-    background-color: #fce4ec;
-    /* Light pink background */
-    background-image:
-        radial-gradient(#ffffff 15%, transparent 16%),
-        radial-gradient(#ffffff 15%, transparent 16%);
-    background-size: 60px 60px;
-    background-position: 0 0, 30px 30px;
+    
+        --s: 100px; /* control the size*/
+        --c1: #efbce8;
+        --c2: #f2d9f2;
+        
+        --_g: 80%,var(--c1) 25.4%,#0000 26%;
+        background:
+         radial-gradient(at 80% var(--_g)),
+         radial-gradient(at 20% var(--_g)),
+         conic-gradient(from -45deg at 50% 41%,var(--c1) 90deg,var(--c2) 0) 
+            calc(var(--s)/2) 0;
+        background-size: var(--s) var(--s);
+    
+    
 
 }
 
@@ -32,9 +39,11 @@ body {
 .game-card {
     background-color: var(--card-background);
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow:  5px 2px 5px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     transition: transform 0.3s ease;
+    border: 2px solid #c14489;
+    height: 720px;
 }
 
 .game-card:hover {
@@ -48,11 +57,14 @@ body {
     font-size: 20px;
     font-weight: bold;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .game-thumbnail {
     width: 100%;
-    height: 200px;
+    height: 180px;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
@@ -66,7 +78,15 @@ body {
 }
 
 .info-item {
-    margin-bottom: 10px;
+    flex: 1;
+    margin-right: 10px;
+}
+.info-itemdevpub {
+    flex: 1;
+    margin-right: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .info-label {
@@ -74,6 +94,41 @@ body {
     color: var(--secondary-color);
     display: block;
     margin-bottom: 2px;
+}
+.info-container {
+    display: flex;
+    justify-content: space-between;
+}
+.info-labeldevpub {
+    font-weight: bold;
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: 2px;
+    flex: 1;
+
+}
+.info-labelplatform {
+    flex: 1;
+    font-weight: bold;
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: 2px;
+}
+.info-platform {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.platform-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.platform-logo {
+    width: 30px;
+    height: auto;
 }
 
 /* .steam-link {
@@ -140,6 +195,9 @@ body {
     font-size: 0.9em;
     display: inline-block;
     margin-top: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .center-container {
@@ -159,27 +217,27 @@ body {
     padding: 10px; 
 }
 .filter-row select {
-    padding: 5px; /* Same padding as filter buttons */
-    margin-left: 5px; /* Space between label and dropdown */
-    border-radius: 5px; /* Round borders */
-    border: 1px solid #ff99cc; /* Light pink border */
-    background-color: #ffb3d9; /* Light pink background */
-    color: #000000; /* Text color */
-    font-size: 14px; /* Font size */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.2s; /* Smooth transition for background color */
+    padding: 5px;
+    margin-left: 5px;
+    border-radius: 5px;
+    border: 1px solid #ff99cc;
+    background-color: #ffb3d9;
+    color: #000000;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s; 
 }
 
 .filter-row select:hover {
-    background-color: #ff99cc; /* Slightly darker pink on hover */
+    background-color: #ff99cc; 
 }
 .filter-row select:focus {
-    outline: none; /* Remove default outline */
-    border-color: #ff99cc; /* Darker pink border on focus */
-    box-shadow: 0 0 5px rgba(255, 102, 153, 0.5); /* Optional: Add a glow effect */
+    outline: none; 
+    border-color: #ff99cc; 
+    box-shadow: 0 0 5px rgba(255, 102, 153, 0.5); 
 }
 .filter-row select option {
-    background-color: #ffb3d9; /* This might not apply in all browsers */
+    background-color: #ffb3d9; 
     color: #333;
 }
 
@@ -225,22 +283,21 @@ body {
 }
 
 .navbar {
-    background-color: rgba(255, 255, 255, 0.2);
-    /* Very light, semi-transparent white */
-    padding: 10px 0;
-    width: 100%;
-    top: 0;
-    left: 0;
-    backdrop-filter: blur(5px);
-    /* Adds a slight blur effect */
-    -webkit-backdrop-filter: blur(5px);
-    /* For Safari support */
-    transition: background-color 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.5); /* More opaque background for a solid look */
+    padding: 15px 20px; /* Increased padding for better spacing */
+    width: 90%;
+    max-width: 1200px; /* Set a maximum width for the navbar */
+    margin: 0 auto; /* Center the navbar */
+    border-radius: 10px; /* Rounded borders */
+    backdrop-filter: none; /* Remove blur for a more solid appearance */
+    transition: background-color 0.3s ease; /* Smooth transition */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    position: relative; /* Changed to relative for a non-fixed navbar */
+    z-index: 1000; /* Ensure it's above other elements */
 }
 
 .navbar:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-    /* Slightly more opaque on hover */
+    background-color: rgba(255, 255, 255, 1);
 }
 
 .nav-container {
