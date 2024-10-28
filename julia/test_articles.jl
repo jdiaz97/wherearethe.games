@@ -11,34 +11,42 @@ add_(str) = replace(str, " " => "_")
 addion(str) = replace(str, " " => "-")
 template_str = read("data/article.html",String)
 
-og_path = "markdown/articles/"
-exit_path = "articles/"
+folders = [
+    "articles/"
+    "articulos/"
+]
 
-mds = readdir(og_path)
+for folder in folders
+
+    og_path = "markdown/"*folder
+    exit_path = folder
+
+    mds = readdir(og_path)
 
 
-for md in mds
-    md_data = read(og_path*md,String)
-    meta::String, content::String = split(md_data,";julia")
+    for md in mds
+        md_data = read(og_path*md,String)
+        meta::String, content::String = split(md_data,";julia")
 
-    eval.(Meta.parse.(split(meta,"\r\n")))
+        eval.(Meta.parse.(split(meta,"\r\n")))
 
 
-    using CommonMark
+        using CommonMark
 
-    CONTENT_PLACEHOLDER = split(CommonMark.html(open(Parser(),og_path*md)),";;julia</p>")[2]
-    
+        CONTENT_PLACEHOLDER = split(CommonMark.html(open(Parser(),og_path*md)),";;julia</p>")[2]
+        
 
-    data = template_str
-    data = replace(data, "TITLE_PLACEHOLDER" => TITLE_PLACEHOLDER)
-    data = replace(data, "DATE_PLACEHOLDER" => DATE_PLACEHOLDER)
-    data = replace(data, "CONTENT_PLACEHOLDER" => CONTENT_PLACEHOLDER)
+        data = template_str
+        data = replace(data, "TITLE_PLACEHOLDER" => TITLE_PLACEHOLDER)
+        data = replace(data, "DATE_PLACEHOLDER" => DATE_PLACEHOLDER)
+        data = replace(data, "CONTENT_PLACEHOLDER" => CONTENT_PLACEHOLDER)
 
-    export_path = exit_path*addion(TITLE_PLACEHOLDER)*".html"
-    data = minify_html(data)
+        export_path = exit_path*lowercase(addion(TITLE_PLACEHOLDER))*".html"
+        data = minify_html(data)
 
-    open(export_path, "w") do file
-        write(file, data)
-    end 
+        open(export_path, "w") do file
+            write(file, data)
+        end 
+    end
+
 end
-
