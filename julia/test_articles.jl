@@ -10,6 +10,9 @@ end
 add_(str) = replace(str, " " => "_")
 addion(str) = replace(str, " " => "-")
 template_str = read("data/article.html",String)
+macro get_name(x)
+    return string(x)
+end
 
 folders = [
     "articles/"
@@ -53,3 +56,7 @@ for folder in folders
     end
 
 end
+
+
+
+@get_name(my_var)

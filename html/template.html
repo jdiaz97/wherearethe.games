@@ -28,14 +28,16 @@
     <meta name="googlebot" content="index, follow">
     <link rel="canonical" href="https://wherearethe.games">
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N6YY39T8TQ"></script>
     <script>
-        // Use JavaScript to load the common-head.html into the head section
-        fetch('../html/common-head.html')
-            .then(response => response.text())
-            .then(data => {
-                document.head.innerHTML += data;
-            });
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-N6YY39T8TQ');
     </script>
+
 </head>
 
 <body>

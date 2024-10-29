@@ -10,7 +10,7 @@ end
 include("geojson.jl")
 add_(str) = replace(str, " " => "_")
 
-file = "data/template.html"
+file = "html/template.html"
 include("../.env")
 
 flags = collect(values(country_flags))
