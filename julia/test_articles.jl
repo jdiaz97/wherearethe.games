@@ -32,9 +32,10 @@ for folder in folders
 
 
         using CommonMark
-
         CONTENT_PLACEHOLDER = split(CommonMark.html(open(Parser(),og_path*md)),";;julia</p>")[2]
-        
+
+        name_html = lowercase(addion(TITLE_PLACEHOLDER))
+        URL_PLACEHOLDER = "https://wherearethe.games/"*folder*name_html
 
         data = template_str
         data = replace(data, "TITLE_PLACEHOLDER" => TITLE_PLACEHOLDER)
@@ -42,7 +43,7 @@ for folder in folders
         data = replace(data, "CONTENT_PLACEHOLDER" => CONTENT_PLACEHOLDER)
         data = replace(data, "MAINIMAGE_PLACEHOLDER" => MAINIMAGE_PLACEHOLDER)
 
-        export_path = exit_path*lowercase(addion(TITLE_PLACEHOLDER))*".html"
+        export_path = exit_path*name_html*".html"
         data = minify_html(data)
 
         open(export_path, "w") do file
