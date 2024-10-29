@@ -39,6 +39,7 @@ for folder in folders
 
         data = template_str
         data = replace(data, "TITLE_PLACEHOLDER" => TITLE_PLACEHOLDER)
+        data = replace(data, "URL_PLACEHOLDER" => URL_PLACEHOLDER)
         data = replace(data, "DATE_PLACEHOLDER" => DATE_PLACEHOLDER)
         data = replace(data, "CONTENT_PLACEHOLDER" => CONTENT_PLACEHOLDER)
         data = replace(data, "MAINIMAGE_PLACEHOLDER" => MAINIMAGE_PLACEHOLDER)
