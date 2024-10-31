@@ -43,29 +43,49 @@
             height: 80vh;
             width: 80%;
             border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            border: 10px solid #FFB6C1;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+            border: 5px solid #ff69b4;
             /* Light pink border */
         }
 
         .leaflet-popup-content-wrapper {
-            background-color: #FFF0F5;
+            background-color: #ffd4e2;
             /* Lavender blush */
             border-radius: 15px;
+            border: 2px solid #ff69b4;
         }
 
         .leaflet-popup-tip {
-            background-color: #FFF0F5;
+            background-color: #ff69b4;
         }
 
         .leaflet-popup-content {
             font-family: Arial, sans-serif; /* Use a font that supports emoji */
-            color: #FF69B4;
+            color: #000000;
             /* Hot pink text */
+            text-align: center;
+            font-weight: 550;
         }
 
         .leaflet-tile-pane {
             filter: hue-rotate(45deg) saturate(1.5) brightness(1.1);
+        }
+        .popup-button {
+            display: inline-block;
+            background-color: #ffa5d2;
+            padding: 4px 8px; /* Smaller padding */
+            border: 1px solid #ff69b4; /* Thinner border */
+            border-radius: 4px; /* Slightly rounded corners */
+            text-decoration: none;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .leaflet-container a {
+            color: #000000;
+        }
+
+        .leaflet-container a:hover {
+            background-color: #FF69B4; /* Darker shade on hover */
+            border-color: #555;
         }
     </style>
 </head>
@@ -122,13 +142,27 @@
             },
             onEachFeature: function (feature, layer) {
                 var flag_url= 'https://flagicons.lipis.dev/flags/4x3/'+feature.properties.flag + ".svg"
-                var flag_img = ' <img src=" '+ flag_url+ '" width="30">'
+                var flag_img = ' <img src=" '+ flag_url+ '" width="40">'
                 var redirect = "/countries/"+feature.properties.name.replace(" ", "_")
                 
-                var popupContent = '<b>' + feature.properties.name + flag_img +' </b> <br>' +
+                var popupContent = '<b>' + flag_img + '</b><br>' + feature.properties.name + '<br>' +
                     '<a href="' + redirect + '" target="_blank" class="popup-button">See Games</a>';
 
                 layer.bindPopup(popupContent);
+                        // Add hover functionality
+                layer.on({
+                    mouseover: function (e) {
+                        var layer = e.target;
+                        layer.setStyle({
+                            color: "#FF69B4",
+                            fillColor: "#FF69B4", // Different pink fill on hover
+                            fillOpacity: 0.6 // Increase opacity on hover
+                        }); 
+                    },
+                    mouseout: function (e) {
+                        geojsonLayer.resetStyle(e.target); // Reset to original style on mouseout
+                    }
+                });
             }
         }).addTo(map);
 
