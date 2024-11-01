@@ -1,5 +1,6 @@
 using HTTP, CSV, DataFrames
 include("scraper.jl")
+include("scraper2.jl")
 include("vals.jl")
 
 function add_contributions()::Nothing
@@ -13,3 +14,5 @@ function add_contributions()::Nothing
     
     process_df(df)
 end
+
+add_contributions()
