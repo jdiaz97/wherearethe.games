@@ -7,6 +7,7 @@ function minify_html(html::String)
 
     return minified_html
 end
+using CommonMark
 
 add_(str) = replace(str, " " => "_")
 addion(str) = replace(str, " " => "-")
@@ -19,7 +20,7 @@ function update_geojson()
 end
 
 function update_countries()
-    file = "html/template.html"
+    file = "html/country_template.html"
     include("../.env")
 
     flags = collect(values(country_flags))
@@ -40,7 +41,7 @@ function update_countries()
 end
 
 function update_articles()
-    template_str = read("data/article.html",String)
+    template_str = read("html/article_template.html",String)
     folders = [
         "articles/"
         "articulos/"
@@ -61,7 +62,6 @@ function update_articles()
             eval.(Meta.parse.(split(meta,"\r\n")))
 
 
-            using CommonMark
             CONTENT_PLACEHOLDER = split(CommonMark.html(open(Parser(),og_path*md)),";;julia</p>")[2]
 
             name_html = lowercase(addion(TITLE_PLACEHOLDER))
@@ -99,3 +99,5 @@ function update_html()
     update_countries()
     update_articless()
 end
+
+update_articles()
