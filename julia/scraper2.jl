@@ -97,7 +97,3 @@ function process_df(dataframe::DataFrame)
     end
     return nothing
 end
-
-# df = create_df("https://store.steampowered.com/curator/9862263-Games-From-Norway/#browse","Norway")
-# process_df(df)
-

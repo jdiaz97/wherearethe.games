@@ -51,6 +51,13 @@ function final_str_platforms(input_string::String)::String
     return finalstr[begin:end-2]
 end
 
+function get_genre(html)::String
+    a = html_elements(html,"div")
+    b = html_elements(a,".block_content_inner") 
+    c::Vector{String} = html_elements(b, ["span","a"]) |> html_text3
+    return join(unique(c), ", ")
+end
+
 function get_game_info(url::String,country::String)
     html = read_html(url)
 
@@ -96,32 +103,6 @@ function failed_info(url::String,country::String)
     return GameInfo("failed", country, "failed", "failed", "failed", "failed", "failed", url, "failed","failed","failed","failed","failed","failed")
 end
 
-# function get_game_info2(file::String, url::String,c::String)
-#     html = parsehtml(read(file,String))
-    
-#     name = html_elements(html, ".apphub_AppName")[1] |> html_text3
-#     description = html_elements(html, ".game_description_snippet")[1] |> html_text3
-#     description = replace(description, "\t" => "")
-#     developer_names = "Unknown"
-#     publisher_names = "Unknown"
-#     try
-#         developer_names = html_elements(html, ".dev_row")[1].children[2] |> html_text3    
-#         publisher_names = html_elements(html, ".dev_row")[2].children[2] |> html_text3
-#     catch
-#     end
-#     release_date = (html_elements(html, ".date") |> html_text3)[1]
-#     thumbnail = html_attrs(html_elements(html, ".game_header_image_full"), "src")[1]
-    
-#     # Hardcoded values
-#     country = c
-#     platform = "Windows"
-#     try
-#         platform = final_str_platforms((html_elements(html,".sysreq_tabs") |> html_text3)[1])    
-#     catch
-#     end
-#     return GameInfo(name, country, description, thumbnail, publisher_names, developer_names, platform, url, release_date)
-# end
-
 function gameinfo_df(a::GameInfo)::DataFrame
     df = DataFrame(
         Name = [a.name],
@@ -141,6 +122,7 @@ function gameinfo_df(a::GameInfo)::DataFrame
     )
     return df
 end
+
 """
 The most important function
 Given a dataframe with 2 columns, :country and :url we will scrape the info from steam. 
@@ -164,68 +146,6 @@ function extract_data(df::DataFrame)::DataFrame
         end
 
     return df_final
-end
-
-"""
-This function gets the path of a HTML file that contains a Steam Mentor.
-It also gets the name of the country.
-"""
-function scrape_mentor(path::String,country::String)::DataFrame
-    a = parsehtml(read(path,String))
-    b = html_elements(a,".recommendation_link") ## all the recomendations of a mentor
-    listgames::Vector{String} = html_attrs(b,"href")
-    listgames = cleanlink.(listgames)
-    listgames = unique(listgames)
-
-    df_data = DataFrame(url = listgames, country = country)
-    return extract_data(df_data)
-
-    # data::Vector{GameInfo} = []
-    # println(country)
-    # for game in ProgressBar(listgames) # urls
-    #     try
-    #         push!(data,get_game_info(game,country))    
-    #     catch
-    #         push!(data,failed_info(game,country))
-    #     end
-    # end
-
-    # df::DataFrame = DataFrame()
-    # for d::GameInfo in data
-    #     df = vcat(df,gameinfo_df(d))
-    # end
-
-    # return df
-end
-
-function scrape_mentor2(listgames::Vector{String},country::String)::DataFrame
-    
-    data::Vector{GameInfo} = []
-    for game in listgames
-        try
-            push!(data,get_game_info(game,country))    
-        catch
-            println(game)
-        end
-    end
-
-    df::DataFrame = DataFrame()
-    for d in data
-        df = vcat(df,gameinfo_df(d))
-    end
-
-    return df
-end
-
-occursin2(a,b) = occursin(b,a)
-cleanlink2(str)::String = split(str,"curator")[1]
-function gamelist_from_curatorlist(html::HTMLDocument)::Vector{String}
-    b = html_elements(html,"a")
-    a = html_elements(b,".Focusable")
-    list = html_attrs(a,"href")
-    list = list[occursin2.(list,"app")]
-    list = cleanlink2.(list)
-    return list
 end
 
 function save_data(df::DataFrame,country::String)
@@ -256,23 +176,6 @@ function write_db(path::String,df::DataFrame)
     end
     CSV.write(path,df, delim =";;")
     return nothing
-end
-
-function get_genre(html)::String
-    a = html_elements(html,"div")
-    b = html_elements(a,".block_content_inner") 
-    c::Vector{String} = html_elements(b, ["span","a"]) |> html_text3
-    return join(unique(c), ", ")
-end
-
-function scrape_steam(c::String)
-    df = scrape_mentor("data/"*c*".html",c); save_data(df,c)
-end
-
-function deploy()
-    run(`git add .`)
-    run(`git commit -m 'new'`)
-    run(`git push`)
 end
 
 ## Checks current .csvs and it will return a new DF without the urls that we already have.

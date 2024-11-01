@@ -5,3 +5,4 @@ julia/vals.jl
 .env
 assets/countries-base.geo.json
 markdown
+old
