@@ -29,6 +29,7 @@ const playstation::String = "https:/store.playstation.com/en-us/product/"
 const xbox::String ="https://www.xbox.com/en-US/games/store/"
 const switch::String = "https://www.nintendo.com/us/store/products/"
 const epic::String = "https://store.epicgames.com/en-US/"
+const gog::String = "https://www.gog.com/en/game/"
 
 function get_playstation(game::String)::String
     data = search_console(game, playstation)
@@ -56,6 +57,12 @@ function get_epic(game::String)::String
     cond1 = occursin("/p/",data["href"]) && occursin(lowercase(split(game)[1]),data["href"]) && occursin("store.epicgames.com",data["href"])
     cond2 = occursin(lowercase(game*" |"),lowercase(data["title"])) 
     save_url_if(cond1,cond2,data)
+end
+
+# todo: implement
+function get_gog(gamme::String)::String
+    data = search_console(game, epic)
+    return ""
 end
 
 function add_links(file::String)
