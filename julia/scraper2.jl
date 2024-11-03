@@ -83,7 +83,7 @@ function create_df(url::String,country::String,get_desc::Bool=false)::DataFrame
     elseif is_list
         return create_df1(url,country)
     else 
-        throw("Invalid URL")
+        throw("Invalid URL: "*url)
     end
 end
 
