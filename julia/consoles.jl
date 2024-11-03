@@ -88,7 +88,7 @@ function add_links(file::String)
     return nothing
 end
 
-function add_consoles(countries::Vector{String})::Nothing
+function update_consoles(countries::Vector{String})::Nothing
     files::Vector{String} = "export/".*countries.*".csv"
 
     for file in files

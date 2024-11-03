@@ -62,18 +62,26 @@ function create_df1(url::String,country::String)::DataFrame
 end
 
 ## #browse
-function create_df2(url::String,country::String)::DataFrame
+function create_df2(url::String,country::String,get_desc::Bool=false)::DataFrame
     html = scroll_and_get_html(url) |> parsehtml
     b = html_elements(html,".recommendation_link") ## all the recomendations of a mentor
     listgames::Vector{String} = html_attrs(b,"href") .|> cleanlink |> unique .|> check_slash
-    return DataFrame(url = listgames, country = country)
+    description = html_elements(html,".recommendation_desc")
+    if get_desc
+        return DataFrame(url = listgames, country = country,description=description)
+    else
+        return DataFrame(url = listgames, country = country)
+    end
 end
 
-function create_df(url::String,country::String)::DataFrame
-    if occursin("list",url)
+function create_df(url::String,country::String,get_desc::Bool=false)::DataFrame
+    is_curator = last(split(url,"/")) == "#browse"
+    is_list = occursin("list",url) 
+    
+    if is_curator
+        return create_df2(url,country,get_desc)
+    elseif is_list
         return create_df1(url,country)
-    elseif occursin("#browse",url)
-        return create_df2(url,country)
     else 
         throw("Invalid URL")
     end

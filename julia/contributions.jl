@@ -3,7 +3,7 @@ include("scraper.jl")
 include("scraper2.jl")
 include("vals.jl")
 
-function add_contributions()::Nothing
+function update_contributions()::Nothing
     url = "https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv"
     response = HTTP.get(url)
     df::DataFrame = CSV.read(IOBuffer(response.body), DataFrame,stringtype=String)
@@ -14,5 +14,3 @@ function add_contributions()::Nothing
     
     process_df(df)
 end
-
-add_contributions()

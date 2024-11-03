@@ -1,3 +1,7 @@
+using CommonMark
+include("consoles.jl")
+include("contributions.jl")
+
 function minify_html(html::String)
     # Replace multiple spaces, newlines, and tabs with a single space
     minified_html = replace(html, r"\s+" => " ")
@@ -7,7 +11,7 @@ function minify_html(html::String)
 
     return minified_html
 end
-using CommonMark
+
 
 add_(str) = replace(str, " " => "_")
 addion(str) = replace(str, " " => "-")
@@ -84,20 +88,9 @@ function update_articles()
     end
 end
 
-function update_consoles()
-    include("consoles.jl")
-    add_consoles()
-end
-
-function update_contributions()
-    include("contributions.jl")
-    add_contributions()
-end
-
 function update_html()
     update_geojson()
     update_countries()
     update_articless()
 end
 
-update_articles()
