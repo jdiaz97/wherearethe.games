@@ -91,7 +91,5 @@ end
 function update_html()
     update_geojson()
     update_countries()
-    update_articless()
+    update_articles()
 end
-
-update_countries()
