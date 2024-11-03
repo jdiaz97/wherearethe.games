@@ -94,3 +94,4 @@ function update_html()
     update_articless()
 end
 
+update_countries()
