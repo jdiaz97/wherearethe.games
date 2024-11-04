@@ -20,7 +20,7 @@ macro get_name(x)
 end
 
 function update_geojson()
-    include("geojson.jl")
+    include("julia/geojson.jl")
 end
 
 function update_countries()
@@ -95,7 +95,7 @@ function update_html()
 end
 
 function update_data()
-    const df = CSV.File("data/curators.csv", delim =", ", stringtype = String)  |> DataFrame
+    df = CSV.File("data/curators.csv", delim =", ", stringtype = String)  |> DataFrame
     for i in 1:nrow(df)
         url = df[i,:url]
         country = df[i,:country]
