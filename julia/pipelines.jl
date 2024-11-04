@@ -25,7 +25,7 @@ end
 
 function update_countries()
     file = "html/country_template.html"
-    include("../.env")
+    include(".env")
 
     flags = collect(values(country_flags))
     countries = collect(keys(country_flags))
@@ -93,6 +93,8 @@ function update_html()
     update_countries()
     update_articles()
 end
+
+
 
 function update_data()
     df = CSV.File("data/curators.csv", delim =", ", stringtype = String)  |> DataFrame
