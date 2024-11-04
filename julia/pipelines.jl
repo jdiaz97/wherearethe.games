@@ -93,3 +93,20 @@ function update_html()
     update_countries()
     update_articles()
 end
+
+function update_data()
+    const df = CSV.File("data/curators.csv", delim =", ", stringtype = String)  |> DataFrame
+    for i in 1:nrow(df)
+        url = df[i,:url]
+        country = df[i,:country]
+        try
+            create_df(url,country) |> process_df
+        catch
+            println("Error at")
+            println(url)
+            println(country)
+        end
+    end
+    
+    update_contributions()
+end
