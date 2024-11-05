@@ -25,7 +25,7 @@ end
 
 function update_countries()
     file = "html/country_template.html"
-    include(".env")
+    include("../.env")
 
     flags = collect(values(country_flags))
     countries = collect(keys(country_flags))
@@ -112,3 +112,5 @@ function update_data()
     
     update_contributions()
 end
+
+update_countries()
