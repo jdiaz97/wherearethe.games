@@ -3,6 +3,8 @@ include("scraper.jl")
 include("scraper2.jl")
 include("vals.jl")
 
+# todo
+# this assumes that links are only from Steamm.
 function update_contributions()::Nothing
     url = "https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv"
     response = HTTP.get(url)

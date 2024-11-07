@@ -94,8 +94,6 @@ function update_html()
     update_articles()
 end
 
-
-
 function update_data()
     df = CSV.File("data/curators.csv", delim =", ", stringtype = String)  |> DataFrame
     for i in 1:nrow(df)

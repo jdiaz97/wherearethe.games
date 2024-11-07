@@ -31,6 +31,7 @@ const switch::String = "https://www.nintendo.com/us/store/products/"
 const epic::String = "https://store.epicgames.com/en-US/"
 const gog::String = "https://www.gog.com/en/game/"
 
+## To do, rewrite and documment better
 function get_playstation(game::String)::String
     data = search_console(game, playstation)
     cond1 = (occursin("product",data["href"]) || occursin("concept",data["href"])) && occursin("store.playstation.com",data["href"])
