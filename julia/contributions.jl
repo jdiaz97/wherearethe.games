@@ -1,6 +1,5 @@
 using HTTP, CSV, DataFrames
 include("scraper.jl")
-include("scraper2.jl")
 include("vals.jl")
 
 # todo
