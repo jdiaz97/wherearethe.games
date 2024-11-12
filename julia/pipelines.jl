@@ -1,6 +1,7 @@
 using CommonMark
 include("consoles.jl")
 include("contributions.jl")
+include("geojson.jl")
 
 function minify_html(html::String)
     # Replace multiple spaces, newlines, and tabs with a single space
@@ -17,10 +18,6 @@ add_(str) = replace(str, " " => "_")
 addion(str) = replace(str, " " => "-")
 macro get_name(x)
     return string(x)
-end
-
-function update_geojson()
-    include("julia/geojson.jl")
 end
 
 function update_countries()
