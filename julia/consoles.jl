@@ -62,7 +62,7 @@ end
 
 # todo: implement
 function get_gog(gamme::String)::String
-    data = search_console(game, epic)
+    data = search_console(game, gog)
     return ""
 end
 

@@ -18,6 +18,7 @@ struct GameInfo
     playstation_link::String
     xbox_link::String
     switch_link::String
+    gog_link::String
 end
 
 function broad_in(vec1::Vector,vec2::Vector)
@@ -94,13 +95,14 @@ function get_game_info(url::String,country::String)
     playstation_link = "Unknown"
     xbox_link = "Unknown"
     switch_link = "Unknown"
+    gog_link = "Unknown"
     
-    return GameInfo(name, country, description, thumbnail, publisher_names, developer_names, platform, url, release_date,genre,epic_link,playstation_link,xbox_link,switch_link)
+    return GameInfo(name, country, description, thumbnail, publisher_names, developer_names, platform, url, release_date,genre,epic_link,playstation_link,xbox_link,switch_link,gog_link)
 end
 cleanlink(str) = split(str,"?")[1]
 
 function failed_info(url::String,country::String)
-    return GameInfo("failed", country, "failed", "failed", "failed", "failed", "failed", url, "failed","failed","failed","failed","failed","failed")
+    return GameInfo("failed", country, "failed", "failed", "failed", "failed", "failed", url, "failed","failed","failed","failed","failed","failed","failed")
 end
 
 function gameinfo_df(a::GameInfo)::DataFrame
