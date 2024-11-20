@@ -1,20 +1,17 @@
 // This is manages the list of games, filters and more.    
 
-// uniqueCountries has to be previously defined
-let countryNameFlag = "https://flagicons.lipis.dev/flags/4x3/"+country_code+".svg";
-        document.getElementById('countryName').textContent = country_data;
-        document.getElementById('countryFlag').src = countryNameFlag;
-        document.getElementById('countryFlag').alt = country_data + " flag";
+let countryNameFlag = "https://flagicons.lipis.dev/flags/4x3/" + country_code + ".svg";
+document.getElementById('countryName').textContent = country_data;
+document.getElementById('countryFlag').src = countryNameFlag;
+document.getElementById('countryFlag').alt = country_data + " flag";
 
-
-let allGames = [];  // Global variable to store all games
-// Global variables to store filters
-// let bitVector_countries = [];
+// Global variables
+let allGames = [];
 let bitVector_years = [];
 let bitVector_genres = []
 let bitVector_platforms = []
-
 let uniqueCountries = new Set([country_data]);
+
 // ascending and descending
 document.getElementById('sort-toggle').addEventListener('click', function () {
     const sortButton = document.getElementById('sort-toggle');
@@ -43,7 +40,6 @@ function parseCSV(csvText) {
         return headers.reduce((obj, header, index) => {
             let value = values[index]?.trim() || '';
 
-            // Check if the header is 'Release_Date' and try to convert it into a Date object
             if (header.trim() === 'Release_Date') {
                 value = new Date(value);
             }
@@ -143,7 +139,6 @@ function filter_by_genre(genre) {
     genreFilter.classList.add('active');
 }
 
-// Function to create filter buttons for years
 function createYearFilterButtons() {
     const filterContainer = document.getElementById('filterButtons-year');
     filterContainer.innerHTML = '<select id="yearFilter" onchange="filter_by_year(this.value)">' +
@@ -205,8 +200,6 @@ function filter_by_platform(platform) {
     platformFilter.classList.add('active');
 }
 
-
-// Function to create a game card HTML
 function createGameCard(game) {
     return `<div class="game-card">
     <div class="game-header" title="${game.Name}">${game.Name}</div>
@@ -313,29 +306,6 @@ function refresh() {
     updateGameCountDisplay(vector_state());
 }
 
-// Function to filter games based on selected country
-// function filter_by_country(country) {
-//     if (country === 'all') {
-//         bitVector_countries.fill(1)
-//     } else {
-//         bitVector_countries = allGames.map(game =>
-//             game.Country == country ? 1 : 0
-//         );
-//     }
-//     refresh();
-//     // Highlight the appropriate button
-//     const filterContainer = document.getElementById('filterButtons');
-//     filterContainer.querySelectorAll('button').forEach(btn => {
-//         btn.classList.remove('active');
-//         if ((country === 'all' && btn.textContent === 'All Countries') ||
-//             btn.textContent === country) {
-//             btn.classList.add('active');
-//         }
-//     });
-// }
-
-
-// Function to filter games based on selected year
 function filter_by_year(year) {
     if (year == 'all') {
         bitVector_years.fill(1)
@@ -361,7 +331,6 @@ function filter_by_year(year) {
     });
 }
 
-// Main function to fetch data and render games
 async function main() {
     // Dynamically generate URLs for each country
     const baseUrl = 'https://raw.githubusercontent.com/jdiaz97/wherearethe.games/main/export/';
@@ -369,7 +338,7 @@ async function main() {
 
     try {
         allGames = await fetchMultipleCSVData(csvUrls);
-        // bitVector_countries = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
+
         bitVector_years = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
         bitVector_genres = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
         bitVector_platforms = new Array(allGames.length).fill(1);  // Initialize with size 10 and all 0s
@@ -396,7 +365,6 @@ let currentSortOrder = 'ascending';
 function reorder_by_indices(indices) {
     // Use the sorted indices to reorder allGames and bitvectors
     allGames = indices.map(i => allGames[i]);
-    // bitVector_countries = indices.map(i => bitVector_countries[i]);
     bitVector_years = indices.map(i => bitVector_years[i]);
     bitVector_genres = indices.map(i => bitVector_genres[i]);
     bitVector_platforms = indices.map(i => bitVector_platforms[i]);
