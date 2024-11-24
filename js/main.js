@@ -143,18 +143,40 @@ function createYearFilterButtons() {
     const filterContainer = document.getElementById('filterButtons-year');
     filterContainer.innerHTML = '<select id="yearFilter" onchange="filter_by_year(this.value)">' +
         '<option value="all">All Years</option>';
-
-    const uniqueYears = [...new Set(allGames.map(game => game.Release_Date.getFullYear()))];
-    uniqueYears.sort((a, b) => b - a);
-
-    // Create an option for each unique year
-    uniqueYears.forEach(year => {
-        const displayYear = isNaN(year) ? "To be announced" : year;
-        filterContainer.querySelector('select').innerHTML += `<option value="${displayYear}">${displayYear}</option>`;
+    
+    // Extract years and handle TBA entries
+    const years = allGames.map(game => {
+        const year = game.Release_Date.getFullYear();
+        return {
+            value: isNaN(year) ? "To be announced" : year,
+            isNumber: !isNaN(year)
+        };
     });
-
-    // Add change event listener to highlight the selected option
-    filterContainer.querySelector('select').addEventListener('change', function (e) {
+    
+    // Create a Set of unique entries and convert to array
+    const uniqueYears = [...new Set(years.map(y => y.value))];
+    
+    // Custom sort function - modified to put "To be announced" first
+    const sortedYears = uniqueYears.sort((a, b) => {
+        // If one is "To be announced", put it at the beginning
+        if (a === "To be announced") return -1;
+        if (b === "To be announced") return 1;
+        // If both are numbers, sort descending
+        if (typeof a === 'number' && typeof b === 'number') {
+            return b - a;
+        }
+        // Fallback comparison
+        return 0;
+    });
+    
+    // Create options
+    const select = filterContainer.querySelector('select');
+    sortedYears.forEach(year => {
+        select.innerHTML += `<option value="${year}">${year}</option>`;
+    });
+    
+    // Add change event listener
+    select.addEventListener('change', function(e) {
         this.classList.add('active');
     });
 }
