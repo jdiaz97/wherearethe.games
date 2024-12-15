@@ -29,6 +29,17 @@ function broad_in(vec1::Vector,vec2::Vector)
     return bit
 end
 
+function clean_date(value::String)
+    is_right_format::Bool = length(split(value)) == 2
+    has_comma::Bool = occursin(",",value)
+
+    if(value == "Coming soon" || !is_right_format || !has_comma) 
+        return "To be announced"
+    else 
+        return value
+    end
+end
+
 function extract_platforms(input_string::AbstractString)
     # Define regular expression pattern to match platform names
     regex_pattern = r"Windows|macOS|SteamOS \+ Linux"
@@ -96,6 +107,7 @@ function get_game_info(url::String,country::String)
     xbox_link = "Unknown"
     switch_link = "Unknown"
     gog_link = "Unknown"
+    release_date = clean_date(release_date)
     
     return GameInfo(name, country, description, thumbnail, publisher_names, developer_names, platform, url, release_date,genre,epic_link,playstation_link,xbox_link,switch_link,gog_link)
 end
