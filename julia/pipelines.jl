@@ -96,6 +96,7 @@ function update_data()
     for i in 1:nrow(df)
         url = df[i,:url]
         country = df[i,:country]
+        println("Processing: " *country)
         try
             create_df(url,country) |> process_df
         catch
