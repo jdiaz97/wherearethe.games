@@ -32,10 +32,10 @@ function updateGameCountDisplay(bitVector_games) {
 // Function to parse CSV text into an array of objects
 function parseCSV(csvText) {
     const rows = csvText.split('\n');
-    const headers = rows[0].split(';;');
+    const headers = rows[0].split(';');
 
     return rows.slice(1, -1).map(row => {
-        const values = row.split(';;');
+        const values = row.split(';');
 
         return headers.reduce((obj, header, index) => {
             let value = values[index]?.trim() || '';

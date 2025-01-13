@@ -61,13 +61,13 @@ function get_epic(game::String)::String
 end
 
 # todo: implement
-function get_gog(gamme::String)::String
+function get_gog(game::String)::String
     data = search_console(game, gog)
     return ""
 end
 
 function add_links(file::String)
-    df::DataFrame = CSV.read(file, DataFrame, stringtype=String; delim = ";;")
+    df::DataFrame = CSV.read(file, DataFrame, stringtype=String; delim = ";")
 
     names::Vector{String} = df[:,:Name]
     for i in ProgressBar(eachindex(names))
@@ -85,7 +85,7 @@ function add_links(file::String)
             end
         end
     end
-    CSV.write(file,df, delim =";;")
+    CSV.write(file,df, delim =";")
     return nothing
 end
 

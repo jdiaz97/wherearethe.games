@@ -76,6 +76,7 @@ function get_game_info(steam_link::String, country::String)
     name = html_elements(html, ".apphub_AppName")[1] |> html_text3
     description = html_elements(html, ".game_description_snippet")[1] |> html_text3
     description = replace(description, "\t" => "")
+    description = replace(description, ";" => ",") # so we won't have problems with delims
     if length(description) > 185
         description = description[1:185] * "..."
     end
@@ -186,11 +187,11 @@ end
 
 function write_db(path::String, df::DataFrame)
     if isfile(path)
-        current = CSV.read(path, DataFrame; delim=";;")
+        current = CSV.read(path, DataFrame; delim=";")
         df = vcat(current, df)
         df = unique(df, :Steam_Link, keep=:last)
     end
-    CSV.write(path, df, delim=";;")
+    CSV.write(path, df, delim=";")
     return nothing
 end
 
@@ -206,7 +207,7 @@ function clean_ifexists(df::DataFrame; in_failed::Bool=false)::DataFrame
         end
         sliced_df::DataFrame = df[df[:, :country].==unique_country, :]
         if (isfile(path))
-            available_df = CSV.read(path, DataFrame, stringtype=String; delim=";;")
+            available_df = CSV.read(path, DataFrame, stringtype=String; delim=";")
             list_urls::Vector{String} = available_df[:, :Steam_Link]
             bit::BitVector = []
             for i in (1:nrow(sliced_df))
@@ -249,7 +250,7 @@ function create_empty_csv(path::String)
     ]
 
     df = DataFrame([[] for _ in columns], columns)
-    CSV.write(path, df, delim=";;")
+    CSV.write(path, df, delim=";")
     return nothing
 end
 
