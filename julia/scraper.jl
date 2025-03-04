@@ -254,7 +254,7 @@ function create_empty_csv(path::String)
     return nothing
 end
 
-function scroll_and_get_html(str)
+function scroll_and_get_html(str)::String
 @pyexec (url=str) => """
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -292,7 +292,7 @@ html = driver.page_source
 driver.quit()
 
 html
-"""
+""" => (html::String)
 end
 
 chopchop(data) = split(data, "?curator")[1]
