@@ -1,5 +1,5 @@
 using TidierVest
-using PyCall
+using PythonCall
 using DataFrames, CSV, ProgressBars
 using Base.Iterators
 
@@ -254,7 +254,8 @@ function create_empty_csv(path::String)
     return nothing
 end
 
-PyCall.py"""
+function scroll_and_get_html(str)
+@pyexec (url=str) => """
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -262,39 +263,38 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 import time
 
-def scroll_and_get_html(url):
-    # Set up the webdriver (you'll need to specify the path to your webdriver)
-    driver = webdriver.Chrome()
-    
-    # Open the website
-    driver.get(url)
-    
-    # Get the initial height of the page
-    last_height = driver.execute_script("return document.body.scrollHeight")
-    
-    while True:
-        # Scroll to the bottom of the page
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        
-        # Wait for the page to load
-        time.sleep(2)
-        
-        # Calculate new scroll height and compare with last scroll height
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
-        last_height = new_height
-    
-    # Get the page source (HTML)
-    html = driver.page_source
-    
-    # Close the browser
-    driver.quit()
-    
-    return html
-"""
+# Set up the webdriver (you'll need to specify the path to your webdriver)
+driver = webdriver.Chrome()
 
-scroll_and_get_html(str) = py"scroll_and_get_html"(str)
+# Open the website
+driver.get(url)
+
+# Get the initial height of the page
+last_height = driver.execute_script("return document.body.scrollHeight")
+
+while True:
+    # Scroll to the bottom of the page
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    
+    # Wait for the page to load
+    time.sleep(2)
+    
+    # Calculate new scroll height and compare with last scroll height
+    new_height = driver.execute_script("return document.body.scrollHeight")
+    if new_height == last_height:
+        break
+    last_height = new_height
+
+# Get the page source (HTML)
+html = driver.page_source
+
+# Close the browser
+driver.quit()
+
+html
+"""
+end
+
 chopchop(data) = split(data, "?curator")[1]
 
 function check_slash(str)
