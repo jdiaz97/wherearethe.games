@@ -1,7 +1,7 @@
 # WebDriver section
 using WebDriver, DataFrames, CSV
-@async run(pipeline(`chromedriver --port=9515`, stdout = devnull, stderr = devnull))
-global const wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host = "localhost", port = 9515)
+@async run(`chromedriver --silent --port=9516 `)
+global const wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host = "localhost", port = 9516)
 current_height!(session::Session) = script!(session, "return document.body.scrollHeight")
 scroll_to_bottom!(session::Session) = script!(session, "window.scrollTo(0, document.body.scrollHeight);")
 

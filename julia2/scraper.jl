@@ -1,6 +1,7 @@
 using TidierVest
 using ProgressMeter
 include("utils.jl")
+include("vals.jl")
 
 Base.@kwdef mutable struct Game
     Name::String = "Unknown" # done
@@ -23,10 +24,8 @@ end
 DataFrame(s::Game) = DataFrame([name => [getfield(s, name)] for name in fieldnames(typeof(s))])
 DataFrame(games::Vector{Game}) = reduce(vcat,DataFrame.(games))
 
-# ensure clean results
 clean_date(date_string::String) = (date_string == "Coming soon" || !(length(split(date_string)) == 2) || !occursin(",", split(date_string)[2])) ? "To be announced" : date_string
 cleanlink(url) = split(url, "/?")[1]*"/"
-
 function final_str_platforms(input_string::String)::String
     platforms = [m.match for m in collect(eachmatch(r"Windows|macOS|SteamOS \+ Linux", input_string))]
     finalstr = ""
@@ -67,3 +66,22 @@ function update_data()
         save_data(df, row[:country])
     end
 end
+
+function contributions()
+    url = "https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv"
+    response = HTTP.get(url)
+    dataframe::DataFrame = CSV.read(IOBuffer(response.body), DataFrame,stringtype=String) |> vals
+    unique_countries::Vector{String} = unique(dataframe[:, :Country])
+    for unique_country in unique_countries
+        sliced_df::DataFrame = dataframe[dataframe[:, :Country].==unique_country, :]
+        df_games = [Game(Steam_Link = link, Country = country) for (link, country) in zip(sliced_df[:,:url], sliced_df[:,:country])] |> fetch_data! |> DataFrame
+        save_data(df_games,country)
+    end
+end
+
+function pre_compile()
+    get_games("https://store.steampowered.com/curator/25510407-Games-Devs-from-Denmark/#browse","Denmark") .|> fetch_data! |> DataFrame
+    return nothing 
+end
+
+pre_compile()
