@@ -41,7 +41,7 @@ get_dev!(game::Game, html) = safe_extract!((g,h) -> (g.Developer_Names = html_el
 get_publisher!(game::Game, html) = safe_extract!((g,h) -> (g.Publisher_Names = html_elements(h, ".dev_row")[2].children[2] |> html_text3), game, html, "Unknown Publisher")
 get_release_date!(game::Game, html) = safe_extract!((g,h) -> (g.Release_Date = clean_date((html_elements(h, ".date")|>html_text3)[1])), game, html, "Unknown Release Date")
 get_thumbnail!(game::Game, html) = safe_extract!((g,h) -> (g.Thumbnail = html_attrs(html_elements(h, ".game_header_image_full"), "src")[1]), game, html, "No Thumbnail")
-get_platform!(game::Game,html) = (game.Platform = final_str_platforms(get((html_elements(html, ".sysreq_tabs")|>html_text3),1,"Windows")))
+get_platform!(game::Game, html) = safe_extract!((g,h) -> (g.Platform = final_str_platforms(get((html_elements(h, ".sysreq_tabs") |> html_text3), 1, "Windows"))), game, html, "Unknown Platform")
 get_genre!(game::Game, html) = safe_extract!((g,h) -> (g.Genre = join(unique(html_elements(h, ["div", ".block_content_inner", "span", "a"]) |> html_text3), ", ")), game, html, "No Genre")
 get_desc!(game::Game, html) = safe_extract!((g,h) -> (g.Description = (d = replace(html_elements(h, ".game_description_snippet")[1] |> html_text3, "\t" => "", ";" => ",")) |> x -> length(x) > 185 ? x[1:183] * "..." : x), game, html, "No Description")
 
