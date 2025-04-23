@@ -62,8 +62,10 @@ end
 function update_data()
     data = CSV.File("data/curators.csv", delim =", ", stringtype = String)
     Threads.@threads for row in data 
-        df = get_games(row[:url],row[:country]) .|> fetch_data! |> DataFrame
-        save_data(df, row[:country])
+        country = row[:country]
+        println("Processing: "*country)
+        df = get_games(row[:url],country) .|> fetch_data! |> DataFrame
+        save_data(df, country)
     end
 end
 
@@ -71,11 +73,12 @@ function contributions()
     url = "https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv"
     response = HTTP.get(url)
     dataframe::DataFrame = CSV.read(IOBuffer(response.body), DataFrame,stringtype=String) |> vals
-    unique_countries::Vector{String} = unique(dataframe[:, :Country])
-    for unique_country in unique_countries
-        sliced_df::DataFrame = dataframe[dataframe[:, :Country].==unique_country, :]
-        df_games = [Game(Steam_Link = link, Country = country) for (link, country) in zip(sliced_df[:,:url], sliced_df[:,:country])] |> fetch_data! |> DataFrame
-        save_data(df_games,country)
+    unique_countries::Vector{String} = unique(dataframe[:, :country])
+    Threads.@threads for unique_country in unique_countries
+        println("Processing: "*unique_country)
+        sliced_df::DataFrame = dataframe[dataframe[:, :country].==unique_country, :]
+        df_games = [Game(Steam_Link = link, Country = country) for (link, country) in zip(sliced_df[:,:url], sliced_df[:,:country])] .|> fetch_data! |> DataFrame
+        save_data(df_games,unique_country)
     end
 end
 
@@ -83,5 +86,3 @@ function pre_compile()
     get_games("https://store.steampowered.com/curator/25510407-Games-Devs-from-Denmark/#browse","Denmark") .|> fetch_data! |> DataFrame
     return nothing 
 end
-
-pre_compile()
