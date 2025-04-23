@@ -25,8 +25,9 @@ DataFrame(s::Game) = DataFrame([name => [getfield(s, name)] for name in fieldnam
 DataFrame(games::Vector{Game}) = reduce(vcat,DataFrame.(games))
 
 clean_date(date_string::String) = (date_string == "Coming soon" || !(length(split(date_string)) == 2) || !occursin(",", split(date_string)[2])) ? "To be announced" : date_string
-cleanlink(url) = split(url, "?curator")[1]*"/" |> cleanlink2
-cleanlink2(url) = split(url, "/?")[1]*"/"
+cleanlink(url) = split(url, "?curator")[1]*"/" |> cleanlink2 |> ensure_trailing_slash
+cleanlink2(url) = split(url, "/?")[1]
+ensure_trailing_slash(str) = endswith(str, "/") ? str : str * "/"
 
 function final_str_platforms(input_string::String)::String
     platforms = [m.match for m in collect(eachmatch(r"Windows|macOS|SteamOS \+ Linux", input_string))]
@@ -69,10 +70,11 @@ function update_data()
         try
             df = get_games(row[:url],country) .|> fetch_data! |> DataFrame
             save_data(df, country)
-        catch
-            println("Error at: "*row[:url])
+            println("Success: "*country)
+        catch err
+            println("Error at: "*country*row[:url])
+            @error "ERROR: " exception=(err, catch_backtrace())
         end
-        
     end
 end
 

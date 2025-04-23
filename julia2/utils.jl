@@ -1,6 +1,6 @@
 # WebDriver section
 using WebDriver, DataFrames, CSV
-@async run(`chromedriver --silent --port=9516 `)
+# @async run(`chromedriver --silent --port=9516 `)
 global const wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host = "localhost", port = 9516)
 current_height!(session::Session) = script!(session, "return document.body.scrollHeight")
 scroll_to_bottom!(session::Session) = script!(session, "window.scrollTo(0, document.body.scrollHeight);")
@@ -8,11 +8,12 @@ scroll_to_bottom!(session::Session) = script!(session, "window.scrollTo(0, docum
 function scroll_and_get_html(url::String)::String
     session::Session = Session(wd) # Will create a new session
     navigate!(session, url)
-
+    sleep(3)
+    
     last_height = current_height!(session)
     while true
         scroll_to_bottom!(session)
-        sleep(3.5)
+        sleep(4.5)
         new_height = current_height!(session)
         if new_height == last_height
             break;
