@@ -51,7 +51,7 @@ end
 
 function write_db(path::String, df::DataFrame)
     if isfile(path)
-        df = unique(vcat(CSV.read(path, DataFrame; delim=";"), df), keep=:last)
+        df = unique(vcat(CSV.read(path, DataFrame; delim=";"), df), :Steam_Link,keep=:last)
     end
     CSV.write(path, df, delim=";")
     return nothing

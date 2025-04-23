@@ -25,7 +25,9 @@ DataFrame(s::Game) = DataFrame([name => [getfield(s, name)] for name in fieldnam
 DataFrame(games::Vector{Game}) = reduce(vcat,DataFrame.(games))
 
 clean_date(date_string::String) = (date_string == "Coming soon" || !(length(split(date_string)) == 2) || !occursin(",", split(date_string)[2])) ? "To be announced" : date_string
-cleanlink(url) = split(url, "/?")[1]*"/"
+cleanlink(url) = split(url, "?curator")[1]*"/" |> cleanlink2
+cleanlink2(url) = split(url, "/?")[1]*"/"
+
 function final_str_platforms(input_string::String)::String
     platforms = [m.match for m in collect(eachmatch(r"Windows|macOS|SteamOS \+ Linux", input_string))]
     finalstr = ""
@@ -64,8 +66,13 @@ function update_data()
     Threads.@threads for row in data 
         country = row[:country]
         println("Processing: "*country)
-        df = get_games(row[:url],country) .|> fetch_data! |> DataFrame
-        save_data(df, country)
+        try
+            df = get_games(row[:url],country) .|> fetch_data! |> DataFrame
+            save_data(df, country)
+        catch
+            println("Error at: "*row[:url])
+        end
+        
     end
 end
 
