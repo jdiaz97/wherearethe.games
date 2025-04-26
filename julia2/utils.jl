@@ -7,8 +7,9 @@ scroll_to_bottom!(session::Session) = script!(session, "window.scrollTo(0, docum
 
 function scroll_and_get_html(url::String)::String
     session::Session = Session(wd) # Will create a new session
+    sleep(1.0)
     navigate!(session, url)
-    sleep(3)
+    sleep(1.5)
     
     last_height = current_height!(session)
     while true
@@ -57,3 +58,5 @@ function write_db(path::String, df::DataFrame)
     CSV.write(path, df, delim=";")
     return nothing
 end
+
+df_to_games(df::DataFrame)::Vector{Game} = [Game(Steam_Link = link, Country = country) for (link, country) in zip(df[:,:url], df[:,:Country])]

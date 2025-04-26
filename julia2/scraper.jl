@@ -63,31 +63,27 @@ function fetch_data!(game::Game)
 end
 
 function update_data()
-    data = CSV.File("data/curators.csv", delim =", ", stringtype = String)
-    Threads.@threads for row in data 
-        country = row[:country]
+    data = CSV.File("data/curators.csv", delim =", ", stringtype = String)    
+    listgames::Vector{Game} = []
+    
+    for row in data
+        country = row[:Country]
         println("Processing: "*country)
-        try
-            df = get_games(row[:url],country) .|> fetch_data! |> DataFrame
-            save_data(df, country)
-            println("Success: "*country)
-        catch err
-            println("Error at: "*country*row[:url])
-            @error "ERROR: " exception=(err, catch_backtrace())
-        end
+        listgames = vcat(listgames,get_games(row[:url],country))      
     end
-end
 
-function contributions()
-    url = "https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv"
-    response = HTTP.get(url)
-    dataframe::DataFrame = CSV.read(IOBuffer(response.body), DataFrame,stringtype=String) |> vals
-    unique_countries::Vector{String} = unique(dataframe[:, :country])
-    Threads.@threads for unique_country in unique_countries
-        println("Processing: "*unique_country)
-        sliced_df::DataFrame = dataframe[dataframe[:, :country].==unique_country, :]
-        df_games = [Game(Steam_Link = link, Country = country) for (link, country) in zip(sliced_df[:,:url], sliced_df[:,:country])] .|> fetch_data! |> DataFrame
-        save_data(df_games,unique_country)
+    contributions = CSV.read(IOBuffer(HTTP.get("https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv").body), DataFrame,stringtype=String) |> vals |> df_to_games
+    listgames = vcat(listgames, contributions)
+
+    println("Starting massive web scraping")
+    @showprogress Threads.@threads for i in eachindex(listgames)
+        listgames[i] = listgames[i] |> fetch_data!
+    end
+
+    df = listgames |> DataFrame
+    sort!(df, :Name)
+    for unique_country in unique(df[:, :Country])
+        save_data(df[df[:, :Country].==unique_country, :],unique_country)
     end
 end
 
