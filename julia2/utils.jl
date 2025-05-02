@@ -7,9 +7,7 @@ global const wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host 
 current_height(session::Session) = script(session, "return document.body.scrollHeight")
 scroll_to_bottom(session::Session) = script(session, "window.scrollTo(0, document.body.scrollHeight);")
 
-function scroll_and_get_html(url::String)::String
-    session::Session = Session(wd) # Will create a new session
-    sleep(1.0)
+function scroll_and_get_html(session, url::String)::String
     navigate(session, url)
     sleep(1.5)
     
@@ -24,12 +22,11 @@ function scroll_and_get_html(url::String)::String
         last_height = new_height
     end
     text = source(session)
-    delete(session) # important
     return text
 end
 
-function get_games(url::String, country::String)::Vector{Game}
-    html = scroll_and_get_html(url) |> parse_html
+function get_games(session, url::String, country::String)::Vector{Game}
+    html = scroll_and_get_html(session, url) |> parse_html
 
     if last(split(url, "/")) == "#browse" # curator
         data = html_elements(html, ".recommendation_link") ## all the recomendations of a mentor

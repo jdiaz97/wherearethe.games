@@ -35,12 +35,19 @@ function search_consoles(session, str::String)
     )
 end
 
+function read_html_epic(session,url)
+    navigate!(session, url)
+    sleep(1.5)
+    return parse_html(source(session))
+end
+
+
+get_name(::Val{PlayStation}, html) = html_text3(html_elements(html,[".psw-c-bg-0","h1"]))[1]
+get_name(::Val{Xbox}, html) = html_text3(html_elements(html,"h1"))[1]
+get_name(::Val{Switch}, html) = html_text3(html_elements(html,"h1"))[1]
+get_game(::Val{Epic}, html) = html_text3(html_elements(html,"h1")[1])
+get_name(::Val{GOG}, html) = (html_elements(html,".game-info__title"))[1].children[1].text |> strip
+
 session::Session = Session(wd)
 navigate!(session, "https://duckduckgo.com/?t=h_&q=test&ia=web")
-
-b = search_consoles(session, "Tormented Souls")
-
-
-u = b.playstation[1]
-html = read_html(u)
-html_text3(html_elements(html,[".psw-c-bg-0","h1"]))[1]
+sessions = [Session(wd) for _ in 1:Threads.nthreads()]

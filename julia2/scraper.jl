@@ -42,12 +42,14 @@ end
 function update_data()
     data = CSV.File("data/curators.csv", delim=", ", stringtype=String)
     listgames::Vector{Game} = []
+    sessions = [Session(wd) for _ in 1:Threads.nthreads()]
 
     @showprogress Threads.@threads for row in data
         country = row[:Country]
         println("Processing: " * country)
-        listgames = vcat(listgames, get_games(row[:url], country))
+        listgames = vcat(listgames, get_games(sessions[Threads.threaid()], row[:url], country))
     end
+    delete.(sessions)
 
     contributions = CSV.read(IOBuffer(HTTP.get("https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv").body), DataFrame, stringtype=String) |> vals |> df_to_games
     listgames = vcat(listgames, contributions)
