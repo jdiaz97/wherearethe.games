@@ -9,30 +9,12 @@ url(::Val{Epic})        = "https://store.epicgames.com/en-US/"
 url(::Val{GOG})         = "https://www.gog.com/en/game/"
 url(x::Platform) = url(Val(x))
 
-struct Links
-    playstation::Vector{String}
-    xbox::Vector{String}
-    switch::Vector{String}
-    epic::Vector{String}
-    gog::Vector{String}
-end
-
 function search_console(session, console::String, str::String,)
     search(session, console*" "*str)
-    sleep(2.5)
+    sleep(2)
     html = source(session) |> parse_html
     res = html_attrs(html_elements(html, [".pAgARfGNTRe_uaK72TAD", "a"]), "href")
     return res[1:3]
-end
-
-function search_consoles(session, str::String)
-    return Links(
-        search_console(session, url(PlayStation), str),
-        search_console(session, url(Xbox), str),
-        search_console(session, url(Switch), str),
-        search_console(session, url(Epic), str),
-        search_console(session, url(GOG), str),
-    )
 end
 
 function read_html_epic(session,url)
@@ -41,13 +23,52 @@ function read_html_epic(session,url)
     return parse_html(source(session))
 end
 
+function get_true_link(links::Vector{String}, platform::Platform, name::String)::String
+    try
+    for link in links
+        test_name = get_name(platform, link |> read_html)
+        if (test_name == name)
+            return link
+        end
+    end
+    catch e
+    end
+    # not a single link succeded, so we guess there's no true link
+    return ""
+end
 
 get_name(::Val{PlayStation}, html) = html_text3(html_elements(html,[".psw-c-bg-0","h1"]))[1]
 get_name(::Val{Xbox}, html) = html_text3(html_elements(html,"h1"))[1]
-get_name(::Val{Switch}, html) = html_text3(html_elements(html,"h1"))[1]
+get_name(::Val{Switch}, html) = split(html_text3(html_elements(html,"title")[1])," for Nintendo")[1]
 get_game(::Val{Epic}, html) = html_text3(html_elements(html,"h1")[1])
 get_name(::Val{GOG}, html) = (html_elements(html,".game-info__title"))[1].children[1].text |> strip
 
-session::Session = Session(wd)
-navigate!(session, "https://duckduckgo.com/?t=h_&q=test&ia=web")
-sessions = [Session(wd) for _ in 1:Threads.nthreads()]
+function add_console()
+    sessions::Vector{Session} = [Session(wd) for _ in 1:Threads.nthreads()]
+    navigate!.(sessions, "https://duckduckgo.com/?t=h_&q=test&ia=web")
+
+    df::DataFrame = get_current_data()
+    @showprogress Threads.@threads for unique_country in unique(df[:, :Country])
+        temp_df = df[df[:, :Country].==unique_country, :]
+        for i in 1:nrow(temp_df)
+            name = temp_df[i,:Name]
+
+            platforms = [
+                (enum = PlayStation, column = :Playstation_Link),
+                (enum = Xbox, column = :Xbox_Link),
+                (enum = Switch, column = :Switch_Link),
+                (enum = GOG, column = :GOG_Link)
+            ]
+
+            for platform in platforms
+                if (temp_df[i,platform.column] == "Unknown")
+                    session = sessions[Threads.threadid()]
+                    links = search_console(session, url(platform.enum), name)
+                    temp_df[i,platform.column] = get_true_link(links, platform.enum, name)
+                end
+            end
+
+            save_data(temp_df,unique_country)
+        end
+    end
+end

@@ -1,4 +1,4 @@
-using WebDriver, DataFrames, CSV, TidierVest
+using WebDriver, DataFrames, CSV, TidierVest, ProgressMeter
 
 @enum Platform Steam PlayStation Xbox Switch Epic GOG
 
@@ -74,11 +74,15 @@ DataFrame(games::Vector{Game}) = reduce(vcat, DataFrame.(games))
 df_to_games(df::DataFrame)::Vector{Game} = [Game(Steam_Link = link, Country = country) for (link, country) in zip(df[:,:url], df[:,:Country])]
 
 function get_current_data()::DataFrame
+    df = reduce(vcat,CSV.read.(get_exports(), DataFrame; delim=";"))
+    return df
+end
+
+function get_exports()::Vector{String}
     exp = "export/"
     data = exp.*readdir(exp)
     data = data[data .!= exp*"failed.csv"]
-    df = reduce(vcat,CSV.read.(data, DataFrame; delim=";"))
-    return df
+    return data
 end
 
 try_get(f,x::String="Unknown") = try f() catch e return x end;
