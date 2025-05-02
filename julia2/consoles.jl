@@ -1,12 +1,14 @@
 using WebDriver, TidierVest
+include("utils.jl")
 
 search(session, x::String) = script!(session, "document.getElementById('search_form_input').value = '" * x * "'; document.getElementById('search_form_input').form.submit();")
-const global playstation::String = "https:/store.playstation.com/en-us/ "
-const global xbox::String = "https://www.xbox.com/en-US/games/store/ "
-const global switch::String = "https://www.nintendo.com/us/store/ "
-const global epic::String = "https://store.epicgames.com/en-US/ "
-const global gog::String = "https://www.gog.com/en/game/ "
-const global wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host="localhost", port=9516)
+
+url(::Val{PlayStation}) = "https://store.playstation.com/en-us/"
+url(::Val{Xbox})        = "https://www.xbox.com/en-US/games/store/"
+url(::Val{Switch})      = "https://www.nintendo.com/us/store/"
+url(::Val{Epic})        = "https://store.epicgames.com/en-US/"
+url(::Val{GOG})         = "https://www.gog.com/en/game/"
+url(x::Platform) = url(Val(x))
 
 struct Links
     playstation::Vector{String}
@@ -17,7 +19,7 @@ struct Links
 end
 
 function search_console(session, console::String, str::String,)
-    search(session, console * str)
+    search(session, console*" "*str)
     sleep(2.5)
     html = source(session) |> parse_html
     res = html_attrs(html_elements(html, [".pAgARfGNTRe_uaK72TAD", "a"]), "href")
@@ -26,11 +28,11 @@ end
 
 function search_consoles(session, str::String)
     return Links(
-        search_console(session, playstation, str),
-        search_console(session, xbox, str),
-        search_console(session, switch, str),
-        search_console(session, epic, str),
-        search_console(session, gog, str),
+        search_console(session, url(PlayStation), str),
+        search_console(session, url(Xbox), str),
+        search_console(session, url(Switch), str),
+        search_console(session, url(Epic), str),
+        search_console(session, url(GOG), str),
     )
 end
 
