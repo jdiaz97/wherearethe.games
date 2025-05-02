@@ -38,15 +38,25 @@ function final_str_platforms(input_string::String)::String
     return finalstr[begin:end-2]
 end
 
-safe_extract!(func::Function, game::Game, html, default="Unknown") = try func(game, html) catch _ return default end
-get_name!(::Val{Steam}, game::Game, html) = safe_extract!((g,h) -> (g.Name = html_elements(h, ".apphub_AppName")[1] |> html_text3), game, html, "Unknown Game")
-get_dev!(::Val{Steam}, game::Game, html) = safe_extract!((g,h) -> (g.Developer_Names = html_elements(h, ".dev_row")[1].children[2] |> html_text3), game, html, "Unknown Developer")
-get_publisher!(::Val{Steam}, game::Game, html) = safe_extract!((g,h) -> (g.Publisher_Names = html_elements(h, ".dev_row")[2].children[2] |> html_text3), game, html, "Unknown Publisher")
-get_release_date!(::Val{Steam}, game::Game, html) = safe_extract!((g,h) -> (g.Release_Date = clean_date((html_elements(h, ".date")|>html_text3)[1])), game, html, "Unknown Release Date")
-get_thumbnail!(::Val{Steam}, game::Game, html) = safe_extract!((g,h) -> (g.Thumbnail = html_attrs(html_elements(h, ".game_header_image_full"), "src")[1]), game, html, "No Thumbnail")
-get_platform!(::Val{Steam}, game::Game, html) = safe_extract!((g,h) -> (g.Platform = final_str_platforms(get((html_elements(h, ".sysreq_tabs") |> html_text3), 1, "Windows"))), game, html, "Unknown Platform")
-get_genre!(::Val{Steam}, game::Game, html) = safe_extract!((g,h) -> (g.Genre = join(unique(html_elements(h, ["div", ".block_content_inner", "span", "a"]) |> html_text3), ", ")), game, html, "No Genre")
-get_desc!(::Val{Steam}, game::Game, html) = safe_extract!((g,h) -> (g.Description = (d = replace(html_elements(h, ".game_description_snippet")[1] |> html_text3, "\t" => "", ";" => ",")) |> x -> length(x) > 185 ? x[1:183] * "..." : x), game, html, "No Description")
+try_get(f) = try f() catch; nothing end
+
+get_name!(x::Platform, game::Game, html) = try_get(() -> get_name!(Val(x), game, html))
+get_dev!(x::Platform, game::Game, html) = try_get(() -> get_dev!(Val(x), game, html))
+get_publisher!(x::Platform, game::Game, html) = try_get(() -> get_publisher!(Val(x), game, html))
+get_release_date!(x::Platform, game::Game, html) = try_get(() -> get_release_date!(Val(x), game, html))
+get_thumbnail!(x::Platform, game::Game, html) = try_get(() -> get_thumbnail!(Val(x), game, html))
+get_platform!(x::Platform, game::Game, html) = try_get(() -> get_platform!(Val(x), game, html))
+get_genre!(x::Platform, game::Game, html) = try_get(() -> get_genre!(Val(x), game, html))
+get_desc!(x::Platform, game::Game, html) = try_get(() -> get_desc!(Val(x), game, html))
+
+get_name!(::Val{Steam}, game::Game, html) = (game.Name = html_elements(html, ".apphub_AppName")[1] |> html_text3)
+get_dev!(::Val{Steam}, game::Game, html) = (game.Developer_Names = html_elements(html, ".dev_row")[1].children[2] |> html_text3)
+get_publisher!(::Val{Steam}, game::Game, html) = (game.Publisher_Names = html_elements(html, ".dev_row")[2].children[2] |> html_text3)
+get_release_date!(::Val{Steam}, game::Game, html) = (game.Release_Date = clean_date((html_elements(html, ".date")|>html_text3)[1]))
+get_thumbnail!(::Val{Steam}, game::Game, html) = (game.Thumbnail = html_attrs(html_elements(html, ".game_header_image_full"), "src")[1])
+get_platform!(::Val{Steam}, game::Game, html) = (game.Platform = final_str_platforms(get((html_elements(html, ".sysreq_tabs") |> html_text3), 1, "Windows")))
+get_genre!(::Val{Steam}, game::Game, html) = (game.Genre = join(unique(html_elements(html, ["div", ".block_content_inner", "span", "a"]) |> html_text3), ", "))
+get_desc!(::Val{Steam}, game::Game, html) = (game.Description = (d = replace(html_elements(html, ".game_description_snippet")[1] |> html_text3, "\t" => "", ";" => ",")) |> x -> length(x) > 185 ? x[1:183] * "..." : x)
 
 function fetch_data!(game::Game)
     html = read_html(game.Steam_Link)
