@@ -1,7 +1,17 @@
 include("utils.jl")
 include("vals.jl")
 
-clean_date(date_string::String) = (date_string == "Coming soon" || (length(split(date_string)) == 2) || !occursin(",", split(date_string)[2])) ? "To be announced" : date_string
+function clean_date(date_string::String)
+    parts = split(date_string)
+    
+    # Check if format matches "DD Mon, YYYY" pattern
+    if length(parts) == 3 && endswith(parts[2], ",") && all(isdigit, parts[1]) && all(isdigit, parts[3])
+        return date_string
+    else
+        return "To be announced"
+    end
+end
+
 cleanlink(url) = split(url, "?curator")[1] * "/" |> cleanlink2 |> ensure_trailing_slash
 cleanlink2(url) = split(url, "/?")[1]
 ensure_trailing_slash(str) = endswith(str, "/") ? str : str * "/"

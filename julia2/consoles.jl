@@ -25,12 +25,14 @@ end
 
 function get_true_link(links::Vector{String}, platform::Platform, name::String)::String
     try
-    for link in links
-        test_name = get_name(platform, link |> read_html)
-        if (test_name == name)
-            return link
+        for link in links
+            test_name = get_name(platform, link |> read_html)
+            # TODO:
+            # more validations are needed
+            if (test_name == name)
+                return link
+            end
         end
-    end
     catch e
     end
     # not a single link succeded, so we guess there's no true link
@@ -54,7 +56,7 @@ function add_console()
             name = temp_df[i,:Name]
 
             platforms = [
-                (enum = PlayStation, column = :Playstation_Link),
+                (enum = PlayStation, column = :PlayStation_Link),
                 (enum = Xbox, column = :Xbox_Link),
                 (enum = Switch, column = :Switch_Link),
                 (enum = GOG, column = :GOG_Link)
@@ -62,8 +64,7 @@ function add_console()
 
             for platform in platforms
                 if (temp_df[i,platform.column] == "Unknown")
-                    session = sessions[Threads.threadid()]
-                    links = search_console(session, url(platform.enum), name)
+                    links = search_console(sessions[Threads.threadid()], url(platform.enum), name)
                     temp_df[i,platform.column] = get_true_link(links, platform.enum, name)
                 end
             end

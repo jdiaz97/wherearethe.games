@@ -40,7 +40,7 @@ function get_games(session, url::String, country::String)::Vector{Game}
     return [Game(Country = country, Steam_Link = link) for link in steam_links]
 end
 
-function save_data(df::DataFrame, country::String)
+function save_data(df::DataFrame, country)
     bits::BitVector = df[:, "Name"] .== "Unknown"
     failed::DataFrame = df[bits, :]
     goods::DataFrame = df[.!bits, :]
@@ -62,7 +62,7 @@ Base.@kwdef mutable struct Game
     Genre::String = "Unknown" # done
     Steam_Link::String = "Unknown" # default
     Epic_Link::String = "Unknown"
-    Playstation_Link::String = "Unknown"
+    PlayStation_Link::String = "Unknown"
     Xbox_Link::String = "Unknown"
     Switch_Link::String = "Unknown"
     GOG_Link::String = "Unknown"
@@ -74,7 +74,7 @@ DataFrame(games::Vector{Game}) = reduce(vcat, DataFrame.(games))
 df_to_games(df::DataFrame)::Vector{Game} = [Game(Steam_Link = link, Country = country) for (link, country) in zip(df[:,:url], df[:,:Country])]
 
 function get_current_data()::DataFrame
-    df = reduce(vcat,CSV.read.(get_exports(), DataFrame; delim=";"))
+    df = reduce(vcat,CSV.read.(get_exports(), DataFrame, stringtype = String; delim=";"))
     return df
 end
 
