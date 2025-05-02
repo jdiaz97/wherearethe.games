@@ -4,11 +4,11 @@ using WebDriver, DataFrames, CSV, TidierVest, ProgressMeter
 
 # @async run(`chromedriver --silent --port=9516 `)
 global const wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host = "localhost", port = 9516)
-current_height(session::Session) = script(session, "return document.body.scrollHeight")
-scroll_to_bottom(session::Session) = script(session, "window.scrollTo(0, document.body.scrollHeight);")
+current_height(session::Session) = script!(session, "return document.body.scrollHeight")
+scroll_to_bottom(session::Session) = script!(session, "window.scrollTo(0, document.body.scrollHeight);")
 
 function scroll_and_get_html(session, url::String)::String
-    navigate(session, url)
+    navigate!(session, url)
     sleep(1.5)
     
     last_height = current_height(session)

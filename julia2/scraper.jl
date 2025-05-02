@@ -57,7 +57,7 @@ function update_data()
     println("Scraping games list")
     @showprogress Threads.@threads for row in data
         country = row[:Country]
-        listgames = vcat(listgames, get_games(sessions[Threads.threaid()], row[:url], country))
+        listgames = vcat(listgames, get_games(sessions[Threads.threadid()], row[:url], country))
     end
     delete.(sessions)
 
