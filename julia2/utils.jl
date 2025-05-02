@@ -2,6 +2,8 @@
 using WebDriver, DataFrames, CSV
 # @async run(`chromedriver --silent --port=9516 `)
 global const wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host = "localhost", port = 9516)
+session::Session = Session(wd) # Will create a new session
+navigate!(session,"boquila.org")
 current_height!(session::Session) = script!(session, "return document.body.scrollHeight")
 scroll_to_bottom!(session::Session) = script!(session, "window.scrollTo(0, document.body.scrollHeight);")
 
