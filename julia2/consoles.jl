@@ -1,4 +1,3 @@
-using WebDriver, TidierVest
 include("utils.jl")
 
 search(session, x::String) = script!(session, "document.getElementById('search_form_input').value = '" * x * "'; document.getElementById('search_form_input').form.submit();")
@@ -40,3 +39,8 @@ session::Session = Session(wd)
 navigate!(session, "https://duckduckgo.com/?t=h_&q=test&ia=web")
 
 b = search_consoles(session, "Tormented Souls")
+
+
+u = b.playstation[1]
+html = read_html(u)
+html_text3(html_elements(html,[".psw-c-bg-0","h1"]))[1]
