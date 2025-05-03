@@ -7,14 +7,16 @@ global const wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host 
 current_height(session::Session) = script!(session, "return document.body.scrollHeight")
 scroll_to_bottom(session::Session) = script!(session, "window.scrollTo(0, document.body.scrollHeight);")
 
-function scroll_and_get_html(session, url::String)::String
+function scroll_and_get_html(url::String)::String
+    session = Session(wd)
     navigate!(session, url)
-    sleep(1.5)
+    sleep(2)
+    scroll_to_bottom(session); sleep(2); scroll_to_bottom(session); sleep(2);
     
     last_height = current_height(session)
     while true
         scroll_to_bottom(session)
-        sleep(4.5)
+        sleep(6)
         new_height = current_height(session)
         if new_height == last_height
             break;
@@ -22,11 +24,16 @@ function scroll_and_get_html(session, url::String)::String
         last_height = new_height
     end
     text = source(session)
+    delete!(session)
     return text
 end
 
-function get_games(session, url::String, country::String)::Vector{Game}
-    html = scroll_and_get_html(session, url) |> parse_html
+cleanlink(url) = split(url, "?curator")[1] * "/" |> cleanlink2 |> ensure_trailing_slash
+cleanlink2(url) = split(url, "/?")[1]
+ensure_trailing_slash(str) = endswith(str, "/") ? str : str * "/"
+
+function get_games(url::String, country::String)::Vector{Game}
+    html = scroll_and_get_html(url) |> parse_html
 
     if last(split(url, "/")) == "#browse" # curator
         data = html_elements(html, ".recommendation_link") ## all the recomendations of a mentor

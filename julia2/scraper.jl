@@ -12,10 +12,6 @@ function clean_date(date_string::String)
     end
 end
 
-cleanlink(url) = split(url, "?curator")[1] * "/" |> cleanlink2 |> ensure_trailing_slash
-cleanlink2(url) = split(url, "/?")[1]
-ensure_trailing_slash(str) = endswith(str, "/") ? str : str * "/"
-
 function final_str_platforms(input_string::String)::String
     platforms = [m.match for m in collect(eachmatch(r"Windows|macOS|SteamOS \+ Linux", input_string))]
     finalstr = ""
@@ -51,14 +47,25 @@ end
 function update_data()
     data = CSV.File("data/curators.csv", delim=", ", stringtype=String)
     listgames::Vector{Game} = []
-    sessions = [Session(wd) for _ in 1:Threads.nthreads()]
-    sleep(1.5)
+    # sessions = [Session(wd) for _ in 1:Threads.nthreads()]
+    # sleep(1.5)
 
     println("Scraping games list")
-    @showprogress Threads.@threads for row in data
-        country = row[:Country]
-        listgames = vcat(listgames, get_games(sessions[Threads.threadid()], row[:url], country))
+    games = Vector{Vector{Game}}(undef, length(data))
+    @showprogress Threads.@threads for i in eachindex(data)
+        country = data[i][:Country]
+        url = data[i][:url]
+        try
+            games[i] = get_games(url, country)
+            # listgames = vcat(listgames, get_games(sessions[Threads.threadid()], url, country))
+        catch e
+            bt = catch_backtrace()
+            @error "Error while fetching games" exception = e url = url
+            println("Full backtrace:")
+            Base.show_backtrace(stdout, bt)
+        end
     end
+    listgames = reduce(vcat,games)
     delete.(sessions)
 
     println("Extracting contributions")
@@ -67,7 +74,7 @@ function update_data()
 
     # This will bring all of the available data we already have
     # then we cut repetitions, to prevent repetitive scraping.
-    listgames = unique(vcat(DataFrame(listgames), get_current_date(listgames)), :Steam_Link, keep=:last) |> df_to_games
+    # listgames = unique(vcat(DataFrame(listgames), get_current_date(listgames)), :Steam_Link, keep=:last) |> df_to_games
 
     println("Starting massive web scraping")
     @showprogress Threads.@threads for i in eachindex(listgames)
