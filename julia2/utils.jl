@@ -1,4 +1,4 @@
-using WebDriver, DataFrames, CSV, TidierVest, ProgressMeter
+using WebDriver, DataFrames, CSV, TidierVest, ProgressMeter, HTTP
 
 @enum Platform Steam PlayStation Xbox Switch Epic GOG
 
@@ -10,16 +10,19 @@ scroll_to_bottom(session::Session) = script!(session, "window.scrollTo(0, docume
 function scroll_and_get_html(url::String)::String
     session = Session(wd)
     navigate!(session, url)
-    sleep(2)
     scroll_to_bottom(session); sleep(2); scroll_to_bottom(session); sleep(2);
     
     last_height = current_height(session)
+    i = 0
     while true
         scroll_to_bottom(session)
-        sleep(6)
+        sleep(4)
         new_height = current_height(session)
         if new_height == last_height
-            break;
+            i = i+1
+            if (i>=3)
+                break;
+            end
         end
         last_height = new_height
     end

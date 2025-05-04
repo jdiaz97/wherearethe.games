@@ -47,8 +47,6 @@ end
 function update_data()
     data = CSV.File("data/curators.csv", delim=", ", stringtype=String)
     listgames::Vector{Game} = []
-    # sessions = [Session(wd) for _ in 1:Threads.nthreads()]
-    # sleep(1.5)
 
     println("Scraping games list")
     games = Vector{Vector{Game}}(undef, length(data))
@@ -57,7 +55,6 @@ function update_data()
         url = data[i][:url]
         try
             games[i] = get_games(url, country)
-            # listgames = vcat(listgames, get_games(sessions[Threads.threadid()], url, country))
         catch e
             bt = catch_backtrace()
             @error "Error while fetching games" exception = e url = url
@@ -66,7 +63,6 @@ function update_data()
         end
     end
     listgames = reduce(vcat,games)
-    delete.(sessions)
 
     println("Extracting contributions")
     contributions = CSV.read(IOBuffer(HTTP.get("https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv").body), DataFrame, stringtype=String) |> vals |> df_to_games
