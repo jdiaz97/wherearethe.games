@@ -51,10 +51,9 @@ function get_games(url::String, country::String)::Vector{Game}
 end
 
 function save_data(df::DataFrame, country)
-    bits::BitVector = df[:, "Name"] .== "Unknown"
+    bits::BitVector = df[:, :Name] .== "Unknown"
     failed::DataFrame = df[bits, :]
     goods::DataFrame = df[.!bits, :]
-    failed = select(failed, :Country, :Steam_Link)
     CSV.write("export/"*country*".csv", goods, delim=";")
     CSV.write("export/failed.csv", failed, delim=";")
     return nothing
@@ -80,11 +79,20 @@ end
 
 DataFrame(s::Game) = DataFrame([name => [getfield(s, name)] for name in fieldnames(typeof(s))])
 DataFrame(games::Vector{Game}) = reduce(vcat, DataFrame.(games))
-
-df_to_games(df::DataFrame)::Vector{Game} = [Game(Steam_Link = link, Country = Country) for (link, Country) in zip(df[:,:url], df[:,:Country])]
+contr_to_games(df::DataFrame)::Vector{Game} = [Game(Steam_Link = link, Country = Country) for (link, Country) in zip(df[:,:url], df[:,:Country])]
+get_contributions()::Vector{Game} = CSV.read(IOBuffer(HTTP.get("https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv").body), DataFrame, stringtype=String)  |> contr_to_games
+df_to_games(df::DataFrame)::Vector{Game} = [Game(; Dict(Symbol(name) => row[name] for name in names(df))...) for row in eachrow(df)]
 
 function get_current_data()::DataFrame
     df = reduce(vcat,CSV.read.(get_exports(), DataFrame, stringtype = String; delim=";"))
+    column = Symbol.(names(df))
+    for i in 1:nrow(df)
+        for s in column
+            if (ismissing(df[i,s]))
+                df[i,s] = ""
+            end
+        end
+    end
     return df
 end
 
@@ -106,3 +114,21 @@ get_platform(x::Platform, html)::String = try_get(() -> get_platform(Val(x), htm
 get_genre(x::Platform, html)::String = try_get(() -> get_genre(Val(x), html))
 get_desc(x::Platform, html)::String = try_get(() -> get_desc(Val(x), html))
     
+function scrape_list(listgames::Vector{Game})::Vector{Game}
+    @showprogress Threads.@threads for i in eachindex(listgames)
+        # If we don't know the date, we scrape it
+        if (listgames[i].Release_Date == "To be announced" || listgames[i].Release_Date == "Unknown" )
+            listgames[i] = listgames[i] |> fetch_data!
+        end
+    end
+    return listgames
+end
+
+function save_games(listgames::Vector{Game})
+    df = listgames |> DataFrame
+    sort(df, :Name)
+    
+    for unique_country in unique(df[:, :Country])
+        save_data(df[df[:, :Country].==unique_country, :], unique_country)
+    end
+end

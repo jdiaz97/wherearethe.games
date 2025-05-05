@@ -65,25 +65,21 @@ function update_data()
     listgames = reduce(vcat,games)
 
     println("Extracting contributions")
-    contributions = CSV.read(IOBuffer(HTTP.get("https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv").body), DataFrame, stringtype=String) |> vals |> df_to_games
-    listgames = vcat(listgames, contributions)
+    listgames = vcat(listgames, get_contributions())
 
     # This will bring all of the available data we already have
     # then we cut repetitions, to prevent repetitive scraping.
     listgames = unique(vcat(DataFrame(listgames), get_current_data()), :Steam_Link, keep=:last) |> df_to_games
 
     println("Starting massive web scraping")
-    @showprogress Threads.@threads for i in eachindex(listgames)
-        # If we don't know the date, we scrape it
-        if (listgames[i].Release_Date == "To be announced" || listgames[i].Release_Date == "Unknown" )
-            listgames[i] = listgames[i] |> fetch_data!
-        end
-    end
+    listgames = scrape_list(listgames)
 
-    df = listgames |> DataFrame
-    sort(df, :Name)
-    
-    for unique_country in unique(df[:, :Country])
-        save_data(df[df[:, :Country].==unique_country, :], unique_country)
-    end
+    save_games(listgames)
+end
+
+function update_contributions()
+    listgames = unique(vcat(DataFrame(get_contributions()), get_current_data()), :Steam_Link, keep=:last) |> df_to_games
+    println("Starting massive web scraping")
+    listgames = scrape_list(listgames)
+    save_games(listgames)
 end
