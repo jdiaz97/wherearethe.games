@@ -69,7 +69,7 @@ function update_data()
 
     # This will bring all of the available data we already have
     # then we cut repetitions, to prevent repetitive scraping.
-    listgames = unique(vcat(DataFrame(listgames), get_current_data()), :Steam_Link, keep=:last) |> df_to_games
+    listgames = match_current_data(listgames)
 
     println("Starting massive web scraping")
     listgames = scrape_list(listgames)
@@ -78,8 +78,8 @@ function update_data()
 end
 
 function update_contributions()
-    listgames = unique(vcat(DataFrame(get_contributions()), get_current_data()), :Steam_Link, keep=:last) |> df_to_games
-    println("Starting massive web scraping")
+    listgames = match_current_data(get_contributions())
+    println("Starting web scraping for contributions")
     listgames = scrape_list(listgames)
     save_games(listgames)
 end
