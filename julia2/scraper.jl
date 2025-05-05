@@ -70,7 +70,7 @@ function update_data()
 
     # This will bring all of the available data we already have
     # then we cut repetitions, to prevent repetitive scraping.
-    # listgames = unique(vcat(DataFrame(listgames), get_current_date(listgames)), :Steam_Link, keep=:last) |> df_to_games
+    listgames = unique(vcat(DataFrame(listgames), get_current_data()), :Steam_Link, keep=:last) |> df_to_games
 
     println("Starting massive web scraping")
     @showprogress Threads.@threads for i in eachindex(listgames)
