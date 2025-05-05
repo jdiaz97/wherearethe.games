@@ -74,14 +74,15 @@ function update_data()
 
     println("Starting massive web scraping")
     @showprogress Threads.@threads for i in eachindex(listgames)
-        # If we know the date, we won+t scrape the pages again
-        if (listgames[i].Release_Date == "To be announced" && listgames[i].Release_Date == "Unknown" )
+        # If we don't know the date, we scrape it
+        if (listgames[i].Release_Date == "To be announced" || listgames[i].Release_Date == "Unknown" )
             listgames[i] = listgames[i] |> fetch_data!
         end
     end
 
     df = listgames |> DataFrame
     sort(df, :Name)
+    
     for unique_country in unique(df[:, :Country])
         save_data(df[df[:, :Country].==unique_country, :], unique_country)
     end

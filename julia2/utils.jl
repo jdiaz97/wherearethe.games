@@ -81,7 +81,7 @@ end
 DataFrame(s::Game) = DataFrame([name => [getfield(s, name)] for name in fieldnames(typeof(s))])
 DataFrame(games::Vector{Game}) = reduce(vcat, DataFrame.(games))
 
-df_to_games(df::DataFrame)::Vector{Game} = [Game(Steam_Link = link, Country = country) for (link, country) in zip(df[:,:url], df[:,:Country])]
+df_to_games(df::DataFrame)::Vector{Game} = [Game(Steam_Link = link, Country = Country) for (link, Country) in zip(df[:,:url], df[:,:Country])]
 
 function get_current_data()::DataFrame
     df = reduce(vcat,CSV.read.(get_exports(), DataFrame, stringtype = String; delim=";"))
