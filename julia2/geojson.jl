@@ -1,6 +1,13 @@
 using JSON3
 include("../.env")
 
+"""
+Given the countries defined in .env
+
+It will extract the geojson values from 'countries-base.geo.json'
+
+And export them in 'countries.geo.json'
+"""
 function update_geojson()
     countries = collect(keys(country_flags))
     final_path= "assets/countries.geo.json"
