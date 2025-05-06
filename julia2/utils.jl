@@ -105,15 +105,16 @@ function get_exports()::Vector{String}
 end
 
 try_get(f,x::String="Unknown") = try f() catch e return x end;
+clean_comma(x::String) = replace(x,";" =>"")
 
-get_name(x::Platform, html)::String = try_get(() -> get_name(Val(x), html))
-get_dev(x::Platform, html)::String = try_get(() -> get_dev(Val(x), html))
+get_name(x::Platform, html)::String = try_get(() -> get_name(Val(x), html)) |> clean_comma
+get_dev(x::Platform, html)::String = try_get(() -> get_dev(Val(x), html)) 
 get_publisher(x::Platform, html)::String = try_get(() -> get_publisher(Val(x), html))
 get_release_date(x::Platform, html)::String = try_get(() -> get_release_date(Val(x), html))
 get_thumbnail(x::Platform, html)::String = try_get(() -> get_thumbnail(Val(x), html))
 get_platform(x::Platform, html)::String = try_get(() -> get_platform(Val(x), html))
 get_genre(x::Platform, html)::String = try_get(() -> get_genre(Val(x), html))
-get_desc(x::Platform, html)::String = try_get(() -> get_desc(Val(x), html))
+get_desc(x::Platform, html)::String = try_get(() -> get_desc(Val(x), html)) |> clean_comma
     
 function scrape_list(listgames::Vector{Game},deep::Bool=false)::Vector{Game}
     @showprogress Threads.@threads for i in eachindex(listgames)
