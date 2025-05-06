@@ -179,7 +179,7 @@
         }).addTo(map);
 
         // Fetch the GeoJSON data for world countries
-        fetch('https://raw.githubusercontent.com/jdiaz97/wherearethe.games/main/assets/countries.geo.json')
+        fetch('assets/countries.geo.json')
             .then(response => response.json())
             .then(data => {
                 geojsonLayer.addData(data);
