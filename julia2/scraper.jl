@@ -44,8 +44,7 @@ function fetch_data!(game::Game)
     return game
 end
 
-function update_data()
-    data = CSV.File("data/curators.csv", delim=", ", stringtype=String)
+function update_data(data,deep::Bool=false)
     listgames::Vector{Game} = []
 
     println("Scraping games list")
@@ -72,14 +71,16 @@ function update_data()
     listgames = match_current_data(listgames)
 
     println("Starting massive web scraping")
-    listgames = scrape_list(listgames)
+    listgames = scrape_list(listgames,deep)
 
     save_games(listgames)
 end
 
-function update_contributions()
+big_update_data() = update_data(CSV.File("data/curators.csv", delim=", ", stringtype=String),true)
+
+function update_contributions(deep::Bool=false)
     listgames = match_current_data(get_contributions())
     println("Starting web scraping for contributions")
-    listgames = scrape_list(listgames)
+    listgames = scrape_list(listgames,deep)
     save_games(listgames)
 end

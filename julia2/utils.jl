@@ -115,10 +115,16 @@ get_platform(x::Platform, html)::String = try_get(() -> get_platform(Val(x), htm
 get_genre(x::Platform, html)::String = try_get(() -> get_genre(Val(x), html))
 get_desc(x::Platform, html)::String = try_get(() -> get_desc(Val(x), html))
     
-function scrape_list(listgames::Vector{Game})::Vector{Game}
+function scrape_list(listgames::Vector{Game},deep::Bool=false)::Vector{Game}
     @showprogress Threads.@threads for i in eachindex(listgames)
         # If we don't know the date, we scrape it
-        if (listgames[i].Release_Date == "To be announced" || listgames[i].Release_Date == "Unknown" )
+        cond = deep
+        if (deep)
+            cond = listgames[i].Release_Date == "To be announced" || listgames[i].Release_Date == "Unknown" 
+        else 
+            cond =  listgames[i].Release_Date == "Unknown" 
+        end
+        if (cond)
             listgames[i] = listgames[i] |> fetch_data!
         end
     end
