@@ -75,6 +75,7 @@ Base.@kwdef mutable struct Game
     Xbox_Link::String = "Unknown"
     Switch_Link::String = "Unknown"
     GOG_Link::String = "Unknown"
+    ITCH_Link::String = "Unknown"
 end
 
 DataFrame(s::Game) = DataFrame([name => [getfield(s, name)] for name in fieldnames(typeof(s))])
