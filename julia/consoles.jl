@@ -1,100 +1,75 @@
-ENV["JULIA_CONDAPKG_BACKEND"] = "Null"
-using PythonCall
-const duck = PythonCall.pyimport("duckduckgo_search").DDGS
-using DataFrames, CSV, ProgressBars
+include("utils.jl")
 
-function search_console(name::String,base_url::String)::Dict
-    sleep(3)
-    success = false
-    while !success
-        try
-            value::Dict = pyconvert(Dict,duck().text(name*" "*base_url,max_results=1)[0])
-            success = true
-            return value
-        catch e
-            sleep(2.5)
+search(session, x::String) = script!(session, "document.getElementById('search_form_input').value = '" * x * "'; document.getElementById('search_form_input').form.submit();")
+
+url(::Val{PlayStation}) = "https://store.playstation.com/en-us/"
+url(::Val{Xbox})        = "https://www.xbox.com/en-US/games/store/"
+url(::Val{Switch})      = "https://www.nintendo.com/us/store/"
+url(::Val{Epic})        = "https://store.epicgames.com/en-US/"
+url(::Val{GOG})         = "https://www.gog.com/en/game/"
+url(x::Platform) = url(Val(x))
+
+function search_console(session, console::String, str::String,)
+    search(session, console*" "*str)
+    sleep(2)
+    html = source(session) |> parse_html
+    res = html_attrs(html_elements(html, [".pAgARfGNTRe_uaK72TAD", "a"]), "href")
+    return res[1:3]
+end
+
+function read_html_epic(session,url)
+    navigate!(session, url)
+    sleep(1.5)
+    return parse_html(source(session))
+end
+
+function get_true_link(links::Vector{String}, platform::Platform, name::String)::String
+    try
+        for link in links
+            test_name = get_name(platform, link |> read_html)
+            # TODO:
+            # more validations are needed
+            if (test_name == name)
+                return link
+            end
         end
+    catch e
     end
-end
-
-function save_url_if(cond1::Bool,cond2::Bool,data::Dict)::String
-    if cond1 && cond2 
-        return data["href"]
-    else 
-        return ""
-    end
-end
-
-const playstation::String = "https:/store.playstation.com/en-us/product/"
-const xbox::String ="https://www.xbox.com/en-US/games/store/"
-const switch::String = "https://www.nintendo.com/us/store/products/"
-const epic::String = "https://store.epicgames.com/en-US/"
-const gog::String = "https://www.gog.com/en/game/"
-
-## To do, rewrite and documment better
-function get_playstation(game::String)::String
-    data = search_console(game, playstation)
-    cond1 = (occursin("product",data["href"]) || occursin("concept",data["href"])) && occursin("store.playstation.com",data["href"])
-    cond2 = occursin(lowercase(game)*" -",lowercase(data["title"])) || occursin(lowercase(game)*" |",lowercase(data["title"]))
-    save_url_if(cond1,cond2,data)
-end
-
-function get_xbox(game::String)::String
-    data = search_console(game, xbox)
-    cond1 = (occursin(lowercase(split(game)[1]),data["href"]) &&  occursin("/games/",data["href"])) && occursin("xbox.com",data["href"])
-    cond2 = occursin(lowercase("Buy "*game*" |"),lowercase(data["title"])) || occursin(lowercase(game*" |"),lowercase(data["title"])) 
-    save_url_if(cond1,cond2,data)
-end
-
-function get_switch(game::String)::String
-    data = search_console(game, switch)
-    cond1 = occursin("products",data["href"]) && occursin(lowercase(split(game)[1]),data["href"]) && occursin("nintendo.com",data["href"])
-    cond2 = occursin(lowercase(game*" - Nintendo"),lowercase(data["title"])) || occursin(lowercase(game*" For Nintendo Switch -"),lowercase(data["title"]))
-    save_url_if(cond1,cond2,data)
-end
-
-function get_epic(game::String)::String
-    data = search_console(game, epic)
-    cond1 = occursin("/p/",data["href"]) && occursin(lowercase(split(game)[1]),data["href"]) && occursin("store.epicgames.com",data["href"])
-    cond2 = occursin(lowercase(game*" |"),lowercase(data["title"])) 
-    save_url_if(cond1,cond2,data)
-end
-
-# todo: implement
-function get_gog(game::String)::String
-    data = search_console(game, gog)
+    # not a single link succeded, so we guess there's no true link
     return ""
 end
 
-function add_links(file::String)
-    df::DataFrame = CSV.read(file, DataFrame, stringtype=String; delim = ";")
+get_name(::Val{PlayStation}, html) = html_text3(html_elements(html,[".psw-c-bg-0","h1"]))[1]
+get_name(::Val{Xbox}, html) = html_text3(html_elements(html,"h1"))[1]
+get_name(::Val{Switch}, html) = split(html_text3(html_elements(html,"title")[1])," for Nintendo")[1]
+get_game(::Val{Epic}, html) = html_text3(html_elements(html,"h1")[1])
+get_name(::Val{GOG}, html) = (html_elements(html,".game-info__title"))[1].children[1].text |> strip
 
-    names::Vector{String} = df[:,:Name]
-    for i in ProgressBar(eachindex(names))
-        for (column, get_value) in [
-            (:Epic_Link, get_epic),
-            (:Playstation_Link, get_playstation),
-            (:Xbox_Link, get_xbox),
-            (:Switch_Link, get_switch)
-        ] ### what are enums???
-            value = df[i,column]
-            if (!ismissing(value))
-                if (value == "Unknown")
-                    df[i, column] = get_value(names[i]) 
+function add_console()
+    sessions::Vector{Session} = [Session(wd) for _ in 1:Threads.nthreads()]
+    navigate!.(sessions, "https://duckduckgo.com/?t=h_&q=test&ia=web")
+
+    df::DataFrame = get_current_data()
+    @showprogress Threads.@threads for unique_country in unique(df[:, :Country])
+        temp_df = df[df[:, :Country].==unique_country, :]
+        for i in 1:nrow(temp_df)
+            name = temp_df[i,:Name]
+
+            platforms = [
+                (enum = PlayStation, column = :PlayStation_Link),
+                (enum = Xbox, column = :Xbox_Link),
+                (enum = Switch, column = :Switch_Link),
+                (enum = GOG, column = :GOG_Link)
+            ]
+
+            for platform in platforms
+                if (temp_df[i,platform.column] == "Unknown")
+                    links = search_console(sessions[Threads.threadid()], url(platform.enum), name)
+                    temp_df[i,platform.column] = get_true_link(links, platform.enum, name)
                 end
             end
+
+            save_data(temp_df,unique_country)
         end
     end
-    CSV.write(file,df, delim =";")
-    return nothing
-end
-
-function update_consoles(countries::Vector{String})::Nothing
-    files::Vector{String} = "export/".*countries.*".csv"
-
-    for file in files
-        println("Fetching console links for: "*file)
-        add_links(file)
-    end
-    return nothing
 end
