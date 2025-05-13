@@ -38,10 +38,20 @@ function get_true_link(links::Vector{String}, platform::Platform, name::String):
 end
 
 get_name(::Val{PlayStation}, html) = html_text3(html_elements(html, [".psw-c-bg-0", "h1"]))[1]
+get_publisher(::Val{PlayStation}, html) = html_text3(html_elements(html,[".pdp-game-title","div"]))[4]
+
 get_name(::Val{Xbox}, html) = html_text3(html_elements(html, "h1"))[1]
+get_publisher(::Val{Xbox}, html) = html_elements(html,[".ModuleColumn-module__col___StJzB",".typography-module__xdsBody2___RNdGY"])[2] |> html_text3
+get_dev(::Val{Xbox}, html) = html_elements(html,[".ModuleColumn-module__col___StJzB",".typography-module__xdsBody2___RNdGY"])[3] |> html_text3
+
 get_name(::Val{Switch}, html) = split(html_text3(html_elements(html, "title")[1]), " for Nintendo")[1]
+get_publisher(::Val{Switch}, html) = html_elements(html_elements(html,["main","section","div"])[occursin2.(html_elements(html,["main","section","div"]) |> html_text3,"Publisher")],".TkmhQ")[end] |> html_text3
+
 get_game(::Val{Epic}, html) = html_text3(html_elements(html, "h1")[1])
 get_name(::Val{GOG}, html) = (html_elements(html, ".game-info__title"))[1].children[1].text |> strip
+
+get_dev(::Val{GOG},html) = html_elements(html,[".content-summary-section",".table__row.details__rating.details__row",".details__content.table__row-content","a"])[1] |> html_text3
+get_publisher(::Val{GOG},html) = html_elements(html,[".content-summary-section",".table__row.details__rating.details__row",".details__content.table__row-content","a"])[2] |> html_text3
 
 function add_console()
     sessions::Vector{Session} = [Session(wd) for _ in 1:Threads.nthreads()]

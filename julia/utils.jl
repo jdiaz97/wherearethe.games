@@ -7,6 +7,8 @@ global const wd::RemoteWebDriver = RemoteWebDriver(Capabilities("chrome"), host 
 current_height(session::Session) = script!(session, "return document.body.scrollHeight")
 scroll_to_bottom(session::Session) = script!(session, "window.scrollTo(0, document.body.scrollHeight);")
 
+occursin2(a,b) = occursin(b,a)
+
 function scroll_and_get_html(url::String)::String
     session = Session(wd)
     navigate!(session, url)
