@@ -21,13 +21,19 @@ function read_html_epic(session, url)
     return parse_html(source(session))
 end
 
-function get_true_link(links::Vector{String}, platform::Platform, name::String)::String
+function get_true_link(links::Vector{String}, platform::Platform, name::String, developer::String, publisher::String)::String
     try
         for link in links
-            test_name = get_name(platform, link |> read_html)
-            # TODO:
-            # more validations are needed
-            if (test_name == name)
+            html = read_html(link)
+            new_name = get_name(platform, html)
+            new_publisher = get_publisher(platform,html)
+            new_developer = get_dev(platform,html)
+            
+            validation1::Bool = new_name == name
+            validation2::Bool = occursin(lowercase(new_publisher),lowercase(publisher)) || occursin2(lowercase(new_publisher),lowercase(publisher))
+            validation3::Bool = occursin(lowercase(new_developer),lowercase(developer)) || occursin2(lowercase(new_developer),lowercase(developer))
+            
+            if (validation1 && validation2 && validation3)
                 return link
             end
         end
@@ -45,11 +51,12 @@ get_publisher(::Val{Xbox}, html) = html_elements(html,[".ModuleColumn-module__co
 get_dev(::Val{Xbox}, html) = html_elements(html,[".ModuleColumn-module__col___StJzB",".typography-module__xdsBody2___RNdGY"])[3] |> html_text3
 
 get_name(::Val{Switch}, html) = split(html_text3(html_elements(html, "title")[1]), " for Nintendo")[1]
-get_publisher(::Val{Switch}, html) = html_elements(html_elements(html,["main","section","div"])[occursin2.(html_elements(html,["main","section","div"]) |> html_text3,"Publisher")],".TkmhQ")[end] |> html_text3
+get_publisher(::Val{Switch}, html) = html_elements(html,[".sc-1237z5p-2.fjIvYK",".TkmhQ"])[findfirst(==(1),(html_elements(html,[".sc-1237z5p-2.fjIvYK","h3"]) |> html_text3) .== "Publisher")] |> html_text3
+get_dev(::Val{Switch}, html) = html_elements(html,[".sc-1237z5p-2.fjIvYK",".TkmhQ"])[findfirst(==(1),(html_elements(html,[".sc-1237z5p-2.fjIvYK","h3"]) |> html_text3) .== "Developer")] |> html_text3
 
 get_game(::Val{Epic}, html) = html_text3(html_elements(html, "h1")[1])
-get_name(::Val{GOG}, html) = (html_elements(html, ".game-info__title"))[1].children[1].text |> strip
 
+get_name(::Val{GOG}, html) = (html_elements(html, ".game-info__title"))[1].children[1].text |> strip
 get_dev(::Val{GOG},html) = html_elements(html,[".content-summary-section",".table__row.details__rating.details__row",".details__content.table__row-content","a"])[1] |> html_text3
 get_publisher(::Val{GOG},html) = html_elements(html,[".content-summary-section",".table__row.details__rating.details__row",".details__content.table__row-content","a"])[2] |> html_text3
 
@@ -62,6 +69,8 @@ function add_console()
         temp_df = df[df[:, :Country].==unique_country, :]
         for i in 1:nrow(temp_df)
             name = temp_df[i, :Name]
+            publisher = temp_df[i, :Publisher_Names]
+            developer = temp_df[i, :Developer_Names]
 
             platforms = [
                 (enum=PlayStation, column=:PlayStation_Link),
