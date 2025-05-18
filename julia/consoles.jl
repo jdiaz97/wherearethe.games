@@ -1,5 +1,7 @@
 include("utils.jl")
 
+tr(x::String) = replace(lowercase(x)," "=> "")
+
 url(::Val{PlayStation}) = "https://store.playstation.com/en-us/"
 url(::Val{Xbox}) = "https://www.xbox.com/en-US/games/store/"
 url(::Val{Switch}) = "https://www.nintendo.com/us/store/"
@@ -30,8 +32,8 @@ function get_true_link(links::Vector{String}, platform::Platform, name::String, 
             new_developer = get_dev(platform,html)
             
             validation1::Bool = new_name == name
-            validation2::Bool = occursin(lowercase(new_publisher),lowercase(publisher)) || occursin2(lowercase(new_publisher),lowercase(publisher))
-            validation3::Bool = occursin(lowercase(new_developer),lowercase(developer)) || occursin2(lowercase(new_developer),lowercase(developer))
+            validation2::Bool = occursin(tr(new_publisher),tr(publisher)) || occursin2(tr(new_publisher),tr(publisher))
+            validation3::Bool = occursin(tr(new_developer),tr(developer)) || occursin2(tr(new_developer),tr(developer))
             
             if (validation1 && validation2 && validation3)
                 return link
@@ -81,8 +83,11 @@ function add_console()
 
             for platform in platforms
                 if (temp_df[i, platform.column] == "Unknown")
+                    try                    
                     links = search_console(sessions[Threads.threadid()], url(platform.enum), name)
-                    temp_df[i, platform.column] = get_true_link(links, platform.enum, name)
+                    temp_df[i, platform.column] = get_true_link(links, platform.enum, name, developer,publisher)
+                    catch e 
+                    end
                 end
             end
 
@@ -90,3 +95,4 @@ function add_console()
         end
     end
 end
+
