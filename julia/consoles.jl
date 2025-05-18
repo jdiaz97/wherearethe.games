@@ -72,20 +72,20 @@ function add_console()
             publisher = temp_df[i, :Publisher_Names]
 
             platforms = [
-                (enum=PlayStation, column=:PlayStation_Link),
-                (enum=Xbox, column=:Xbox_Link),
-                (enum=Switch, column=:Switch_Link),
+                # (enum=PlayStation, column=:PlayStation_Link),
+                # (enum=Xbox, column=:Xbox_Link),
+                # (enum=Switch, column=:Switch_Link),
                 (enum=GOG, column=:GOG_Link)
             ]
 
             for platform in platforms
-                if (temp_df[i, platform.column] == "Unknown")
+                # if (temp_df[i, platform.column] == "Unknown")
                     try                    
                     links = search_console(sessions[Threads.threadid()], url(platform.enum), name)
                     temp_df[i, platform.column] = get_true_link(links, platform.enum, name, publisher)
                     catch e 
                     end
-                end
+                # end
             end
 
             save_data(temp_df, unique_country)
