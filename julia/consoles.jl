@@ -23,17 +23,15 @@ function read_html_epic(session, url)
     return parse_html(source(session))
 end
 
-function get_true_link(links::Vector{String}, platform::Platform, name::String, developer::String, publisher::String)::String
+function get_true_link(links::Vector{String}, platform::Platform, name::String, publisher::String)::String
     try
         for link in links
             html = read_html(link)
             new_name = get_name(platform, html)
             new_publisher = get_publisher(platform,html)
-            new_developer = get_dev(platform,html)
             
             validation1::Bool = new_name == name
             validation2::Bool = occursin(tr(new_publisher),tr(publisher)) || occursin2(tr(new_publisher),tr(publisher))
-            validation3::Bool = occursin(tr(new_developer),tr(developer)) || occursin2(tr(new_developer),tr(developer))
             
             if (validation1 && validation2 && validation3)
                 return link
@@ -72,8 +70,7 @@ function add_console()
         for i in 1:nrow(temp_df)
             name = temp_df[i, :Name]
             publisher = temp_df[i, :Publisher_Names]
-            developer = temp_df[i, :Developer_Names]
-
+            
             platforms = [
                 (enum=PlayStation, column=:PlayStation_Link),
                 (enum=Xbox, column=:Xbox_Link),
@@ -85,7 +82,7 @@ function add_console()
                 if (temp_df[i, platform.column] == "Unknown")
                     try                    
                     links = search_console(sessions[Threads.threadid()], url(platform.enum), name)
-                    temp_df[i, platform.column] = get_true_link(links, platform.enum, name, developer,publisher)
+                    temp_df[i, platform.column] = get_true_link(links, platform.enum, name, publisher)
                     catch e 
                     end
                 end
@@ -96,3 +93,5 @@ function add_console()
     end
 end
 
+html = read_html("https://store.playstation.com/en-us/product/UP4293-PPSA02525_00-TORMENTEDSIEAPS5")
+get_publisher(PlayStation,html)
