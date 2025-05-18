@@ -77,13 +77,11 @@ Base.@kwdef mutable struct Game
     Xbox_Link::String = "Unknown"
     Switch_Link::String = "Unknown"
     GOG_Link::String = "Unknown"
-    ITCH_Link::String = "Unknown"
 end
 
 DataFrame(s::Game) = DataFrame([name => [getfield(s, name)] for name in fieldnames(typeof(s))])
 DataFrame(games::Vector{Game}) = reduce(vcat, DataFrame.(games))
 contr_to_games(df::DataFrame)::Vector{Game} = [Game(Steam_Link = link, Country = Country) for (link, Country) in zip(df[:,:url], df[:,:Country])]
-get_contributions()::Vector{Game} = CSV.read(IOBuffer(HTTP.get("https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv").body), DataFrame, stringtype=String) |> vals |> contr_to_games
 df_to_games(df::DataFrame)::Vector{Game} = [Game(; Dict(Symbol(name) => row[name] for name in names(df))...) for row in eachrow(df)]
 match_current_data(listgames::Vector{Game})::Vector{Game} = unique(vcat(DataFrame(listgames), get_current_data()), [:Country, :Steam_Link], keep=:last) |> df_to_games
 

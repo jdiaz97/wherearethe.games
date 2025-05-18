@@ -1,6 +1,8 @@
 include("utils.jl")
 include("vals.jl")
 
+get_contributions()::Vector{Game} = CSV.read(IOBuffer(HTTP.get("https://docs.google.com/spreadsheets/d/1zALLUvzvaVkqnh0d74CeBYKe1XjBpT0wCMyIGpQhi0A/export?format=csv").body), DataFrame, stringtype=String) |> vals |> contr_to_games
+
 function clean_date(date_string::String)
     parts = split(date_string)
     
