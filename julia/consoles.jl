@@ -33,7 +33,7 @@ function get_true_link(links::Vector{String}, platform::Platform, name::String, 
             validation1::Bool = new_name == name
             validation2::Bool = occursin(tr(new_publisher),tr(publisher)) || occursin2(tr(new_publisher),tr(publisher))
             
-            if (validation1 && validation2 && validation3)
+            if (validation1 && validation2)
                 return link
             end
         end
@@ -79,13 +79,13 @@ function add_console()
             ]
 
             for platform in platforms
-                if (temp_df[i, platform.column] == "Unknown")
+                # if (temp_df[i, platform.column] == "Unknown")
                     try                    
                     links = search_console(sessions[Threads.threadid()], url(platform.enum), name)
                     temp_df[i, platform.column] = get_true_link(links, platform.enum, name, publisher)
                     catch e 
                     end
-                end
+                # end
             end
 
             save_data(temp_df, unique_country)
