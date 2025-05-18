@@ -273,7 +273,7 @@ function createGameCard(game) {
                     <a href="${game.Xbox_Link}" class="platform-link xbox-link" target="_blank">
                         <img src="../assets/xbox.webp" alt="Xbox" class="platform-logo">
                     </a>` : ''}
-                    ${game.GOG && game.GOG_Link !== "Unknown" ? `
+                    ${game.GOG_Link && game.GOG_Link !== "Unknown" ? `
                         <a href="${game.Xbox_Link}" class="platform-link gog-link" target="_blank">
                             <img src="../assets/gog.webp" alt="Xbox" class="platform-logo">
                         </a>` : ''}
