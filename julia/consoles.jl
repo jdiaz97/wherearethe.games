@@ -56,7 +56,7 @@ get_dev(::Val{Switch}, html) = html_elements(html_elements(html,[".sc-1237z5p-2.
 
 get_game(::Val{Epic}, html) = html_text3(html_elements(html, "h1")[1])
 
-get_name(::Val{GOG}, html) = (html_elements(html, ".game-info__title"))[1].children[1].text |> strip
+get_name(::Val{GOG}, html) = html_elements(html, ".productcard-basics__title")[1] |> html_text3 |> strip
 get_dev(::Val{GOG},html) = html_elements(html,[".content-summary-section",".table__row.details__rating.details__row",".details__content.table__row-content","a"])[1] |> html_text3
 get_publisher(::Val{GOG},html) = html_elements(html,[".content-summary-section",".table__row.details__rating.details__row",".details__content.table__row-content","a"])[2] |> html_text3
 
@@ -79,13 +79,13 @@ function add_console()
             ]
 
             for platform in platforms
-                # if (temp_df[i, platform.column] == "Unknown")
+                if (temp_df[i, platform.column] == "Unknown")
                     try                    
                     links = search_console(sessions[Threads.threadid()], url(platform.enum), name)
                     temp_df[i, platform.column] = get_true_link(links, platform.enum, name, publisher)
                     catch e 
                     end
-                # end
+                end
             end
 
             save_data(temp_df, unique_country)

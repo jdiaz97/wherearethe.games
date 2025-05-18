@@ -141,3 +141,16 @@ function save_games(listgames::Vector{Game})
         save_data(df[df[:, :Country].==unique_country, :], unique_country)
     end
 end
+
+
+function extract_meta_content(meta_tag::String)
+    # Use regex to match the content attribute
+    content_match = match(r"content\s*=\s*[\"'](.*?)[\"']", meta_tag)
+    
+    if content_match !== nothing
+        return content_match.captures[1]
+    end
+    
+    # Return nothing if no content attribute is found
+    return nothing
+end
