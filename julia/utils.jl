@@ -106,7 +106,7 @@ function get_exports()::Vector{String}
 end
 
 try_get(f,x::String="Unknown") = try f() catch e return x end;
-clean_comma(x::String) = replace(x,";" =>"")
+clean_comma(x) = replace(x,";" =>"")
 
 get_name(x::Platform, html)::String = try_get(() -> get_name(Val(x), html)) |> clean_comma
 get_dev(x::Platform, html)::String = try_get(() -> get_dev(Val(x), html)) 

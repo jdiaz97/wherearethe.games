@@ -51,8 +51,8 @@ get_publisher(::Val{Xbox}, html) = html_elements(html,[".ModuleColumn-module__co
 get_dev(::Val{Xbox}, html) = html_elements(html,[".ModuleColumn-module__col___StJzB",".typography-module__xdsBody2___RNdGY"])[3] |> html_text3
 
 get_name(::Val{Switch}, html) = split(html_text3(html_elements(html, "title")[1]), " for Nintendo")[1]
-get_publisher(::Val{Switch}, html) = html_elements(html,[".sc-1237z5p-2.fjIvYK",".TkmhQ"])[findfirst(==(1),(html_elements(html,[".sc-1237z5p-2.fjIvYK","h3"]) |> html_text3) .== "Publisher")] |> html_text3
-get_dev(::Val{Switch}, html) = html_elements(html,[".sc-1237z5p-2.fjIvYK",".TkmhQ"])[findfirst(==(1),(html_elements(html,[".sc-1237z5p-2.fjIvYK","h3"]) |> html_text3) .== "Developer")] |> html_text3
+get_publisher(::Val{Switch}, html) = html_elements(html_elements(html,[".sc-1237z5p-2.fjIvYK"])[findfirst(==(1),occursin2.(html_elements(html,[".sc-1237z5p-2.fjIvYK"]) |> html_text3,"Publisher"))],["span",".TkmhQ"])[] |> html_text3
+get_dev(::Val{Switch}, html) = html_elements(html_elements(html,[".sc-1237z5p-2.fjIvYK"])[findfirst(==(1),occursin2.(html_elements(html,[".sc-1237z5p-2.fjIvYK"]) |> html_text3,"Developer"))],["span",".TkmhQ"])[] |> html_text3
 
 get_game(::Val{Epic}, html) = html_text3(html_elements(html, "h1")[1])
 
@@ -70,7 +70,7 @@ function add_console()
         for i in 1:nrow(temp_df)
             name = temp_df[i, :Name]
             publisher = temp_df[i, :Publisher_Names]
-            
+
             platforms = [
                 (enum=PlayStation, column=:PlayStation_Link),
                 (enum=Xbox, column=:Xbox_Link),
@@ -92,6 +92,3 @@ function add_console()
         end
     end
 end
-
-html = read_html("https://store.playstation.com/en-us/product/UP4293-PPSA02525_00-TORMENTEDSIEAPS5")
-get_publisher(PlayStation,html)
