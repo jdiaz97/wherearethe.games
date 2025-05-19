@@ -9,12 +9,14 @@ url(::Val{Epic}) = "https://store.epicgames.com/en-US/"
 url(::Val{GOG}) = "https://www.gog.com/en/game/"
 url(x::Platform) = url(Val(x))
 
-function search_console(session, console::String, str::String,)
-    script!(session, "document.getElementById('search_form_input').value = '" * console * " " * str * "'; document.getElementById('search_form_input').form.submit();")
+function search_console(session, console::String, name::String,)
+    script!(session, "document.getElementById('search_form_input').value = '" * console * " " * name * "'; document.getElementById('search_form_input').form.submit();")
     sleep(2)
     html = source(session) |> parse_html
     res = html_attrs(html_elements(html, [".pAgARfGNTRe_uaK72TAD", "a"]), "href")
-    return res[1:3]
+    res = res[1:3]
+    res = res[occursin2.(res,console)]
+    return res
 end
 
 function read_html_epic(session, url)
