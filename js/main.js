@@ -265,7 +265,7 @@ function createGameCard(game) {
                     <a href="${game.Epic_Link}" class="platform-link epic-link" target="_blank">
                         <img src="../assets/epic.webp" alt="Epic Games" class="platform-logo">
                     </a>` : ''}
-                    ${game.Playstation_Link && game.Playstation_Link !== "Unknown" ? `
+                    ${game.PlayStation_Link && game.PlayStation_Link !== "Unknown" ? `
                     <a href="${game.Playstation_Link}" class="platform-link playstation-link" target="_blank">
                         <img src="../assets/playstation.webp" alt="PlayStation" class="platform-logo">
                     </a>` : ''}
