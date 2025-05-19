@@ -23,17 +23,19 @@ function read_html_epic(session, url)
     return parse_html(source(session))
 end
 
-function get_true_link(links::Vector{String}, platform::Platform, name::String, publisher::String)::String
+function get_true_link(links::Vector{String}, platform::Platform, name::String, publisher::String,developer::String)::String
     try
         for link in links
             html = read_html(link)
             new_name = get_name(platform, html)
             new_publisher = get_publisher(platform,html)
+            new_developer = get_dev(platform,html)
             
             validation1::Bool = lowercase(new_name) == lowercase(name)
             validation2::Bool = occursin(tr(new_publisher),tr(publisher)) || occursin2(tr(new_publisher),tr(publisher))
+            validation3::Bool = occursin(tr(new_developer),tr(developer)) || occursin2(tr(new_developer),tr(developer))
             
-            if (validation1 && validation2)
+            if (validation1 && (validation2 || validation3))
                 return link
             end
         end
@@ -70,6 +72,7 @@ function add_console()
         for i in 1:nrow(temp_df)
             name = temp_df[i, :Name]
             publisher = temp_df[i, :Publisher_Names]
+            developer = temp_df[i, :Developer_Names]
 
             platforms = [
                 (enum=PlayStation, column=:PlayStation_Link),
@@ -82,7 +85,7 @@ function add_console()
                 if (temp_df[i, platform.column] == "Unknown")
                     try                    
                     links = search_console(sessions[Threads.threadid()], url(platform.enum), name)
-                    temp_df[i, platform.column] = get_true_link(links, platform.enum, name, publisher)
+                    temp_df[i, platform.column] = get_true_link(links, platform.enum, name, publisher,developer)
                     catch e 
                     end
                 end
