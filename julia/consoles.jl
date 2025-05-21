@@ -67,9 +67,13 @@ get_publisher(::Val{GOG},html) = html_elements(html,[".content-summary-section",
 function add_console()
     sessions::Vector{Session} = [Session(wd) for _ in 1:Threads.nthreads()]
     navigate!.(sessions, "https://duckduckgo.com/?t=h_&q=test&ia=web")
+    sleep(3)
+    navigate!.(sessions, "https://duckduckgo.com/?t=h_&q=test&ia=web")
 
     df::DataFrame = get_current_data()
-    @showprogress Threads.@threads for unique_country in unique(df[:, :Country])
+    p = Progress(nrow(df))
+    unique_countries = unique(df[:, :Country])
+    Threads.@threads for unique_country in unique_countries
         temp_df = df[df[:, :Country].==unique_country, :]
         for i in 1:nrow(temp_df)
             name = temp_df[i, :Name]
@@ -94,6 +98,9 @@ function add_console()
             end
 
             save_data(temp_df, unique_country)
+            next!(p)
+
         end
     end
+    finish!(p)
 end
